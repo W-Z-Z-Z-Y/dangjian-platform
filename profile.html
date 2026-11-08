@@ -1,0 +1,608 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>个人中心 - 智汇AI党建平台</title>
+  <link rel="stylesheet" href="styles.css?v=20260427-3">
+</head>
+<body>
+  <!-- Toast -->
+  <div id="toast"></div>
+
+  <!-- Top Navigation -->
+  <nav id="topnav">
+    <div class="nav-wrap">
+      <div class="nav-logo" onclick="window.location.href='index.html'">
+        <div class="nav-logo-icon">★</div>
+        <div><div class="nav-logo-text">智汇AI党建平台</div></div>
+      </div>
+      <div class="nav-links">
+        <div class="nav-link" onclick="window.location.href='index.html'">首 页</div>
+        <div class="nav-link" onclick="window.location.href='party.html'">党建引领</div>
+        <div class="nav-link" onclick="window.location.href='showcase.html'">社团风采</div>
+        <div class="nav-link" onclick="window.location.href='activities.html'">党建活动</div>
+        <div class="nav-link" onclick="window.location.href='study.html'">在线答题</div>
+        <div class="nav-link" onclick="window.location.href='chat.html'">AI党建</div>
+        <div class="nav-link" onclick="window.location.href='message.html'">留言建议</div>
+      </div>
+      <div class="nav-right" id="navRight">
+        <button class="nav-btn" onclick="toggleTheme()">🌙 深色</button>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Profile Hero -->
+  <div class="profile-hero">
+    <div class="container">
+      <div style="display:flex;align-items:center;gap:24px;flex-wrap:wrap;">
+        <div class="profile-avatar">👤</div>
+        <div class="profile-info">
+          <div class="profile-name" id="profileName">加载中...</div>
+          <div class="profile-role" id="profileRole">正在加载用户信息...</div>
+          <div style="margin-top:8px;display:flex;gap:8px;flex-wrap:wrap;">
+            <span class="badge" style="background:rgba(255,255,255,0.15);color:#fff;" id="profilePoints">🏆 积分加载中...</span>
+            <span class="badge" style="background:rgba(255,255,255,0.15);color:#fff;" id="profileTag">📚 数据加载中...</span>
+          </div>
+        </div>
+        <div style="margin-left:auto;display:flex;gap:12px;">
+          <button class="btn btn-outline btn-sm" style="color:#fff;border-color:rgba(255,255,255,0.3);" onclick="openProfileEditModal()">编辑资料</button>
+          <button class="btn btn-outline btn-sm" style="color:#fff;border-color:rgba(255,255,255,0.3);" onclick="confirmLogout()">退出登录</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Profile Tabs -->
+  <div class="profile-tabs">
+    <div class="profile-tab active" onclick="switchProfileTab('signup',this)">报名记录</div>
+    <div class="profile-tab" onclick="switchProfileTab('study',this)">学习记录</div>
+    <div class="profile-tab" onclick="switchProfileTab('collect',this)">我的收藏</div>
+    <div class="profile-tab" onclick="switchProfileTab('achievement',this)">个人成就</div>
+    <div class="profile-tab" onclick="switchProfileTab('download',this)">资料下载</div>
+    <div class="profile-tab" onclick="switchProfileTab('settings',this)">设置</div>
+  </div>
+
+  <div class="section">
+    <div class="container">
+      <!-- Signup Records -->
+      <div id="ptab-signup">
+        <div class="card" style="padding:0;">
+          <div class="table-wrap">
+            <table>
+              <thead><tr><th>活动名称</th><th>活动时间</th><th>报名状态</th><th>签到状态</th><th>操作</th></tr></thead>
+              <tbody id="signupTableBody">
+                <tr><td colspan="5" style="text-align:center;padding:40px;color:var(--text3);">正在加载活动记录...</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- Study Records -->
+      <div id="ptab-study" style="display:none;">
+        <div class="card" style="padding:0;">
+          <div style="padding:20px 24px;background:linear-gradient(90deg,var(--blue-dark),var(--blue));color:#fff;display:flex;align-items:center;gap:12px;">
+            <span style="font-size:24px;">📚</span>
+            <div><div style="font-weight:700;">我的学习记录</div><div style="font-size:12px;opacity:0.7;">答题记录 · 自动保存</div></div>
+            <div style="margin-left:auto;">
+              <button class="btn btn-outline btn-sm" style="color:#fff;border-color:rgba(255,255,255,0.3);" onclick="loadStudyRecords()" title="刷新数据">🔄</button>
+            </div>
+          </div>
+          <div class="table-wrap">
+            <table>
+              <thead><tr><th>测验内容</th><th>类型</th><th>成绩/进度</th><th>获得积分</th><th>答题时间</th></tr></thead>
+              <tbody>
+                <tr><td colspan="5" style="text-align:center;padding:40px;">
+                  <div style="font-size:32px;margin-bottom:12px;">⏳</div>
+                  <div>正在加载学习记录...</div>
+                </td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- Collections -->
+      <div id="ptab-collect" style="display:none;">
+        <div class="card" style="padding:0;">
+          <div class="table-wrap">
+            <table>
+              <thead><tr><th>题目</th><th>类型</th><th>分类</th><th>收藏时间</th><th>操作</th></tr></thead>
+              <tbody id="favoriteTableBody">
+                <tr><td colspan="5" style="text-align:center;padding:40px;color:var(--text3);">正在加载收藏...</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- Achievement -->
+      <div id="ptab-achievement" style="display:none;">
+        <div class="card" style="padding:36px;margin-bottom:24px;">
+          <h3 style="font-size:18px;font-weight:700;margin-bottom:32px;">🏆 我的成就</h3>
+          <div class="stats-row">
+            <div class="stats-mini"><div class="stats-mini-num" style="color:var(--red);" id="achTotalScore">-</div><div class="stats-mini-label">总积分</div></div>
+            <div class="stats-mini"><div class="stats-mini-num" style="color:var(--blue);" id="achAttempts">-</div><div class="stats-mini-label">答题次数</div></div>
+            <div class="stats-mini"><div class="stats-mini-num" style="color:var(--gold);" id="achFavorites">-</div><div class="stats-mini-label">收藏题目</div></div>
+            <div class="stats-mini"><div class="stats-mini-num" style="color:#00b45a;" id="achAccuracy">-</div><div class="stats-mini-label">综合正确率</div></div>
+          </div>
+        </div>
+        <div class="card" style="padding:36px;">
+          <h3 style="font-size:18px;font-weight:700;margin-bottom:24px;">🏅 我的徽章</h3>
+          <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:20px;">
+            <div style="background:linear-gradient(135deg,#fff3cd,#ffeaa7);border-radius:12px;padding:24px;text-align:center;border:1px solid #ffeaa7;">
+              <div style="font-size:48px;margin-bottom:12px;">📚</div>
+              <div style="font-weight:700;margin-bottom:4px;">学习达人</div>
+              <div style="font-size:12px;color:var(--text2);">完成10门课程</div>
+            </div>
+            <div style="background:linear-gradient(135deg,#d4edda,#c3e6cb);border-radius:12px;padding:24px;text-align:center;border:1px solid #c3e6cb;">
+              <div style="font-size:48px;margin-bottom:12px;">🎯</div>
+              <div style="font-weight:700;margin-bottom:4px;">答题能手</div>
+              <div style="font-size:12px;color:var(--text2);">测验满分3次</div>
+            </div>
+            <div style="background:linear-gradient(135deg,#d1ecf1,#bee5eb);border-radius:12px;padding:24px;text-align:center;border:1px solid #bee5eb;">
+              <div style="font-size:48px;margin-bottom:12px;">🎉</div>
+              <div style="font-weight:700;margin-bottom:4px;">活动积极分子</div>
+              <div style="font-size:12px;color:var(--text2);">参加5次活动</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Downloads -->
+      <div id="ptab-download" style="display:none;">
+        <div class="card" style="padding:0;">
+          <div class="table-wrap">
+            <table>
+              <thead><tr><th>文件名称</th><th>类型</th><th>下载时间</th><th>操作</th></tr></thead>
+              <tbody>
+                <tr><td>中国共产党章程全文</td><td><span class="badge badge-blue">📄 文档</span></td><td>2024-12-10</td><td><button class="action-btn act-edit" onclick="showToast('开始下载...')">重新下载</button></td></tr>
+                <tr><td>入党积极分子培训教材</td><td><span class="badge badge-blue">📄 文档</span></td><td>2024-11-25</td><td><button class="action-btn act-edit" onclick="showToast('开始下载...')">重新下载</button></td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- Settings -->
+      <div id="ptab-settings" style="display:none;">
+        <div class="card" style="padding:36px;">
+          <h3 style="font-size:18px;font-weight:700;margin-bottom:24px;">⚙️ 个性化设置</h3>
+          
+          <div style="margin-bottom:32px;">
+            <h4 style="font-size:16px;font-weight:600;margin-bottom:16px;">🔤 字体大小</h4>
+            <div style="display:flex;gap:12px;align-items:center;">
+              <button class="btn btn-outline-blue btn-sm" onclick="changeFontSize('decrease')">A- 减小</button>
+              <button class="btn btn-outline-blue btn-sm" onclick="changeFontSize('reset')">A 默认</button>
+              <button class="btn btn-outline-blue btn-sm" onclick="changeFontSize('increase')">A+ 增大</button>
+              <span style="font-size:14px;color:var(--text3);margin-left:12px;">当前大小：<span id="currentFontSize">16</span>px</span>
+            </div>
+          </div>
+          
+          <div style="margin-bottom:32px;">
+            <h4 style="font-size:16px;font-weight:600;margin-bottom:16px;">🎨 主题设置</h4>
+            <div style="display:flex;gap:12px;">
+              <button class="btn btn-outline-blue btn-sm" onclick="setTheme('light')">☀️ 浅色主题</button>
+              <button class="btn btn-outline-blue btn-sm" onclick="setTheme('dark')">🌙 深色主题</button>
+            </div>
+          </div>
+          
+          <div>
+            <h4 style="font-size:16px;font-weight:600;margin-bottom:16px;">💾 数据管理</h4>
+            <div style="display:flex;gap:12px;flex-wrap:wrap;">
+              <button class="btn btn-outline-blue" onclick="showToast('导出功能开发中...')">📤 导出数据</button>
+              <button class="btn btn-outline-blue" onclick="showToast('导入功能开发中...')">📥 导入数据</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Edit Profile Modal -->
+      <div class="modal-overlay" id="profileEditModal" style="display:none;" onclick="if(event.target===this)closeProfileEditModal()">
+        <div class="modal-box" style="max-width:520px;">
+          <div class="modal-title">✏️ 编辑个人资料</div>
+          <div class="form-group">
+            <label class="form-label">姓名 <span style="color:var(--red);">*</span></label>
+            <input class="form-input" id="editProfileName" placeholder="请输入姓名">
+          </div>
+          <div style="display:flex;gap:12px;">
+            <div class="form-group" style="flex:1;">
+              <label class="form-label">邮箱</label>
+              <input class="form-input" id="editProfileEmail" placeholder="请输入邮箱">
+            </div>
+            <div class="form-group" style="flex:1;">
+              <label class="form-label">手机号</label>
+              <input class="form-input" id="editProfilePhone" placeholder="请输入手机号">
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="form-label">头像 Emoji（可选）</label>
+            <input class="form-input" id="editProfileAvatar" placeholder="如：👨‍💻 / 🌟">
+          </div>
+          <div style="display:flex;gap:12px;margin-top:24px;">
+            <button class="btn btn-red" style="flex:1;" onclick="saveProfileEdit()">保存资料</button>
+            <button class="btn btn-outline" style="flex:1;" onclick="closeProfileEditModal()">取消</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <div class="container">
+      <div class="footer-grid">
+        <div><div class="footer-brand-title">智汇AI党建平台</div><div class="footer-brand-desc">以党建为引领，以智汇为纽带，以AI为翼。</div></div>
+        <div><div class="footer-col-title">快速导航</div><a href="index.html" class="footer-link">首页</a><a href="party.html" class="footer-link">党建引领</a></div>
+        <div><div class="footer-col-title">功能模块</div><a href="study.html" class="footer-link">在线答题</a><a href="chat.html" class="footer-link">AI党建</a></div>
+      </div>
+      <div class="footer-bottom"><div class="footer-copy">© 2024 智汇AI党建平台</div></div>
+    </div>
+  </footer>
+
+  <script src="common-enhanced.js?v=20260427-15"></script>
+  <script>
+    let profileCurrentUser = null;
+
+    function safeText(value, fallback = '-') {
+      const text = value === null || value === undefined ? '' : String(value);
+      return text.trim() ? text : fallback;
+    }
+
+    function getAvatarDisplay(user) {
+      if (user && user.avatar && String(user.avatar).trim()) return String(user.avatar).trim();
+      const name = (user && user.name) ? String(user.name).trim() : '';
+      return name ? name.charAt(0).toUpperCase() : '👤';
+    }
+
+    function syncUserToLocal(user) {
+      if (!user) return;
+      localStorage.setItem('userName', user.name || '');
+      localStorage.setItem('userRole', user.role || 'user');
+      localStorage.setItem('userEmail', user.email || '');
+      localStorage.setItem('userPhone', user.phone || '');
+      localStorage.setItem('userAvatar', user.avatar || '');
+      localStorage.setItem('userId', user.id || '');
+      localStorage.setItem('userLoggedIn', 'true');
+    }
+
+    function renderProfileHeader(user, stats = {}) {
+      document.getElementById('profileName').textContent = safeText(user.name, '未命名用户');
+
+      const roleMap = {
+        admin: '管理员',
+        user: '普通用户',
+        guest: '访客用户'
+      };
+      const roleText = roleMap[user.role] || '用户';
+      const contactInfo = [user.email, user.phone].filter(Boolean).join(' · ');
+      document.getElementById('profileRole').textContent = contactInfo ? `${roleText} · ${contactInfo}` : roleText;
+
+      document.querySelector('.profile-avatar').textContent = getAvatarDisplay(user);
+
+      const score = Number(stats.totalScore || 0);
+      const attempts = Number(stats.attempts || 0);
+      document.getElementById('profilePoints').textContent = `🏆 ${score.toLocaleString('zh-CN')} 积分`;
+      document.getElementById('profileTag').textContent = attempts > 0
+        ? `📚 已完成 ${attempts} 次答题`
+        : '📚 开始你的首次答题';
+    }
+
+    async function loadProfile() {
+      try {
+        const resp = await apiRequest('/auth/me', { silent: true, timeoutMs: 4000 });
+        const user = resp && resp.data && resp.data.user ? resp.data.user : null;
+        if (!user) throw new Error('用户信息为空');
+
+        profileCurrentUser = user;
+        syncUserToLocal(user);
+        renderProfileHeader(user);
+      } catch (error) {
+        document.getElementById('profileName').textContent = '未登录用户';
+        document.getElementById('profileRole').textContent = '请先登录查看个人信息';
+        showToast('请先登录');
+        setTimeout(() => { window.location.href = 'login.html'; }, 800);
+      }
+    }
+
+    function openProfileEditModal() {
+      const user = profileCurrentUser || {
+        name: localStorage.getItem('userName') || '',
+        email: localStorage.getItem('userEmail') || '',
+        phone: localStorage.getItem('userPhone') || '',
+        avatar: localStorage.getItem('userAvatar') || ''
+      };
+      document.getElementById('editProfileName').value = user.name || '';
+      document.getElementById('editProfileEmail').value = user.email || '';
+      document.getElementById('editProfilePhone').value = user.phone || '';
+      document.getElementById('editProfileAvatar').value = user.avatar || '';
+      document.getElementById('profileEditModal').style.display = 'flex';
+    }
+
+    function closeProfileEditModal() {
+      document.getElementById('profileEditModal').style.display = 'none';
+    }
+
+    async function saveProfileEdit() {
+      const name = document.getElementById('editProfileName').value.trim();
+      const email = document.getElementById('editProfileEmail').value.trim();
+      const phone = document.getElementById('editProfilePhone').value.trim();
+      const avatar = document.getElementById('editProfileAvatar').value.trim();
+
+      if (!name) {
+        showToast('❌ 姓名不能为空');
+        return;
+      }
+
+      try {
+        const resp = await apiRequest('/auth/profile', {
+          method: 'PUT',
+          body: JSON.stringify({ name, email, phone, avatar })
+        });
+        if (resp.success && resp.data && resp.data.user) {
+          profileCurrentUser = resp.data.user;
+          syncUserToLocal(resp.data.user);
+          renderProfileHeader(resp.data.user);
+          closeProfileEditModal();
+          showToast('✅ 资料更新成功');
+        }
+      } catch (error) {
+        // apiRequest 已提示
+      }
+    }
+
+    function setTheme(theme) {
+      if (theme === 'light') {
+        document.body.classList.remove('dark-theme');
+        localStorage.setItem('theme', 'light');
+        showToast('已切换到浅色主题');
+      } else if (theme === 'dark') {
+        document.body.classList.add('dark-theme');
+        localStorage.setItem('theme', 'dark');
+        showToast('已切换到深色主题');
+      }
+    }
+
+    function confirmLogout() {
+      if (confirm('确定要退出登录吗？')) {
+        if (typeof window.doLogout === 'function') {
+          window.doLogout();
+        } else {
+          localStorage.removeItem('authToken');
+          localStorage.removeItem('userLoggedIn');
+          localStorage.removeItem('userName');
+          localStorage.removeItem('userRole');
+          localStorage.removeItem('userId');
+          localStorage.removeItem('userEmail');
+          localStorage.removeItem('userPhone');
+          localStorage.removeItem('userAvatar');
+          showToast('👋 已成功退出登录');
+          setTimeout(() => { window.location.href = 'index.html'; }, 800);
+        }
+      }
+    }
+
+    async function loadSignupRecords() {
+      const tbody = document.getElementById('signupTableBody');
+      if (!tbody) return;
+      tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;padding:40px;color:var(--text3);">正在加载活动记录...</td></tr>';
+
+      try {
+        const items = await getActivities(null, 8);
+        if (!items.length) {
+          tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;padding:40px;color:var(--text3);">暂无活动记录</td></tr>';
+          return;
+        }
+
+        tbody.innerHTML = items.map(item => {
+          const status = item.status || '报名中';
+          const isOpen = status === '报名中';
+          return `
+            <tr>
+              <td>${safeText(item.title)}</td>
+              <td>${safeText(item.date)}</td>
+              <td><span class="badge badge-${isOpen ? 'green' : 'gray'}">${status}</span></td>
+              <td><span class="badge badge-${isOpen ? 'gray' : 'green'}">${isOpen ? '待参加' : '已结束'}</span></td>
+              <td><a class="action-btn act-edit" href="activity-detail.html?id=${encodeURIComponent(item.id)}">查看详情</a></td>
+            </tr>
+          `;
+        }).join('');
+      } catch (error) {
+        tbody.innerHTML = `<tr><td colspan="5" style="text-align:center;padding:40px;color:var(--red);">加载失败：${safeText(error.message, '未知错误')}</td></tr>`;
+      }
+    }
+
+    // 页面加载时初始化
+    document.addEventListener('DOMContentLoaded', function() {
+      loadProfile();
+      loadSignupRecords();
+      loadStudyRecords();
+      loadFavorites();
+      loadAchievementData();
+    });
+
+    // 加载个人学习记录
+    async function loadStudyRecords() {
+      const studyContainer = document.getElementById('ptab-study');
+      if (!studyContainer) return;
+
+      try {
+        // 显示加载状态
+        const tbody = studyContainer.querySelector('tbody');
+        if (tbody) tbody.innerHTML = `
+          <tr><td colspan="5" style="text-align:center;padding:40px;">
+            <div style="font-size:32px;margin-bottom:12px;">⏳</div>
+            <div>正在加载学习记录...</div>
+          </td></tr>`;
+
+        // 获取答题记录数据
+        const isLoggedIn = localStorage.getItem('userLoggedIn') === 'true';
+        if (!isLoggedIn) {
+          if (tbody) tbody.innerHTML = `
+            <tr><td colspan="5" style="text-align:center;padding:40px;">
+              <div style="font-size:32px;margin-bottom:12px;">🔒</div>
+              <div>请先登录查看学习记录</div>
+            </td></tr>`;
+          return;
+        }
+
+        const recordsData = await getUserQuizRecords(20, 0);
+        const records = recordsData.records || [];
+
+        // 渲染数据
+        if (records.length > 0) {
+          const rows = records.map(record => {
+            const date = new Date(record.created_at).toLocaleDateString();
+            const total = record.total_questions || 0;
+            const correct = record.correct_answers || 0;
+            const score = record.score || 0;
+            const timeSpent = record.time_spent ? `${Math.floor(record.time_spent / 60)}分${record.time_spent % 60}秒` : '-';
+            const accuracy = total > 0 ? Math.round((correct / total) * 100) : 0;
+            const startTime = record.start_time ? new Date(record.start_time).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}) : '';
+
+            return `
+              <tr>
+                <td>党建知识测验 (${total}题)</td>
+                <td><span class="badge badge-gold">答题</span></td>
+                <td>${correct}/${total} (${accuracy}%)<br><small>耗时: ${timeSpent}</small></td>
+                <td style="color:var(--red);font-weight:700;">${score}</td>
+                <td>${date} ${startTime}</td>
+              </tr>
+            `;
+          }).join('');
+
+          if (tbody) tbody.innerHTML = rows;
+        } else {
+          if (tbody) tbody.innerHTML = `
+            <tr><td colspan="5" style="text-align:center;padding:40px;">
+              <div style="font-size:32px;margin-bottom:12px;">📝</div>
+              <div>暂无学习记录</div>
+            </td></tr>`;
+        }
+      } catch (error) {
+        console.error('加载学习记录失败:', error);
+        const tbody = studyContainer.querySelector('tbody');
+        if (tbody) tbody.innerHTML = `
+          <tr><td colspan="5" style="text-align:center;padding:40px;">
+            <div style="font-size:32px;margin-bottom:12px;">❌</div>
+            <div>加载失败: ${error.message || '未知错误'}</div>
+          </td></tr>`;
+      }
+    }
+
+    async function loadFavorites() {
+      const tbody = document.getElementById('favoriteTableBody');
+      if (!tbody) return;
+      tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;padding:40px;color:var(--text3);">正在加载收藏...</td></tr>';
+
+      try {
+        const data = await getUserFavorites(50, 0);
+        const list = Array.isArray(data.favorites) ? data.favorites : [];
+
+        if (!list.length) {
+          tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;padding:40px;"><div style="font-size:32px;margin-bottom:12px;">🌟</div><div>暂无收藏题目</div></td></tr>';
+          return;
+        }
+
+        tbody.innerHTML = list.map(item => {
+          const typeColor = item.type === '多选' ? 'blue' : (item.type === '判断' ? 'gold' : 'red');
+          const date = item.favorited_at ? new Date(item.favorited_at).toLocaleDateString() : '-';
+          return `
+            <tr>
+              <td style="max-width:360px;">${safeText(item.title)}</td>
+              <td><span class="badge badge-${typeColor}">${safeText(item.type)}</span></td>
+              <td>${safeText(item.category)}</td>
+              <td>${date}</td>
+              <td><button class="action-btn act-del" onclick="removeFavoriteItem(${Number(item.question_id)})">取消收藏</button></td>
+            </tr>
+          `;
+        }).join('');
+      } catch (error) {
+        tbody.innerHTML = `<tr><td colspan="5" style="text-align:center;padding:40px;color:var(--red);">加载失败：${safeText(error.message, '未知错误')}</td></tr>`;
+      }
+    }
+
+    async function removeFavoriteItem(questionId) {
+      if (!confirm('确认取消收藏该题目吗？')) return;
+      try {
+        const resp = await removeFavorite(questionId);
+        if (resp.success) {
+          showToast('✅ 已取消收藏');
+          loadFavorites();
+          loadAchievementData();
+        }
+      } catch (error) {
+        // apiRequest 已统一提示
+      }
+    }
+
+    async function loadAchievementData() {
+      try {
+        const [quiz, fav] = await Promise.all([
+          getUserQuizRecords(50, 0),
+          getUserFavorites(1, 0)
+        ]);
+
+        const quizStats = quiz.stats || {};
+        const totalScore = Math.round(Number(quizStats.average_score || 0) * Number(quizStats.total_attempts || 0));
+        const attempts = Number(quizStats.total_attempts || 0);
+        const favorites = Number(fav.total || 0);
+        const totalQ = Number(quizStats.total_questions_answered || 0);
+        const totalCorrect = Number(quizStats.total_correct_answers || 0);
+        const accuracy = totalQ > 0 ? `${Math.round((totalCorrect / totalQ) * 100)}%` : '0%';
+
+        document.getElementById('achTotalScore').textContent = totalScore.toLocaleString('zh-CN');
+        document.getElementById('achAttempts').textContent = String(attempts);
+        document.getElementById('achFavorites').textContent = String(favorites);
+        document.getElementById('achAccuracy').textContent = accuracy;
+
+        renderProfileHeader(profileCurrentUser || {
+          name: localStorage.getItem('userName') || '用户',
+          role: localStorage.getItem('userRole') || 'user',
+          email: localStorage.getItem('userEmail') || '',
+          phone: localStorage.getItem('userPhone') || '',
+          avatar: localStorage.getItem('userAvatar') || ''
+        }, {
+          totalScore,
+          attempts
+        });
+      } catch (error) {
+        document.getElementById('achTotalScore').textContent = '-';
+        document.getElementById('achAttempts').textContent = '-';
+        document.getElementById('achFavorites').textContent = '-';
+        document.getElementById('achAccuracy').textContent = '-';
+      }
+    }
+
+    // 修改标签切换函数以加载数据
+    const originalSwitchProfileTab = window.switchProfileTab;
+    window.switchProfileTab = function(tab, el) {
+      if (originalSwitchProfileTab) originalSwitchProfileTab(tab, el);
+
+      setTimeout(() => {
+        if (tab === 'signup') {
+          loadSignupRecords();
+        }
+        if (tab === 'study') {
+          loadStudyRecords();
+        }
+        if (tab === 'collect') {
+          loadFavorites();
+        }
+        if (tab === 'achievement') {
+          loadAchievementData();
+        }
+      }, 100);
+    };
+  </script>
+</body>
+</html>
+
+
+
+
+
+
+
+

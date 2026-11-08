@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>登录/注册 - 智汇AI党建平台</title>
+  <link rel="stylesheet" href="styles.css?v=20260427-3">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; }
+    html, body {
+      margin: 0; padding: 0;
+      min-height: 100%;
+      background: linear-gradient(135deg, #4a0000 0%, #c90000 45%, #1a3a8a 100%);
+      background-attachment: fixed;
+    }
+    body {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: 'Noto Sans SC', sans-serif;
+      position: relative;
+      overflow-x: hidden;
+    }
+    /* 背景装饰光圈 */
+    body::before {
+      content: '';
+      position: fixed;
+      top: -180px; left: -180px;
+      width: 520px; height: 520px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(255,255,255,0.07) 0%, transparent 70%);
+      pointer-events: none;
+    }
+    body::after {
+      content: '';
+      position: fixed;
+      bottom: -120px; right: -120px;
+      width: 400px; height: 400px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(22,93,255,0.15) 0%, transparent 70%);
+      pointer-events: none;
+    }
+    .login-tabs { display: flex; margin-bottom: 24px; border-bottom: 1px solid var(--border); }
+    .login-tab { flex: 1; text-align: center; padding: 12px; cursor: pointer; border-bottom: 2px solid transparent; transition: all 0.2s; color: var(--text3); }
+    .login-tab:hover { color: var(--text); }
+    .login-tab.active { border-bottom-color: var(--red); color: var(--red); font-weight: 600; }
+    .login-form { display: block; }
+    .login-form.hidden { display: none; }
+    /* 覆盖 login-box 使其有玻璃感 */
+    .login-box {
+      background: rgba(255,255,255,0.97) !important;
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      box-shadow: 0 24px 80px rgba(0,0,0,0.35) !important;
+      border: 1px solid rgba(255,255,255,0.6);
+    }
+    /* logo 图标渐变 */
+    .login-logo-icon {
+      background: linear-gradient(135deg, #c90000, #8b0000) !important;
+      box-shadow: 0 8px 24px rgba(201,0,0,0.4);
+    }
+    /* 登录按钮加光泽 */
+    .btn-red { box-shadow: 0 4px 16px rgba(201,0,0,0.35); }
+    /* 品牌标语 */
+    .login-brand-tagline {
+      font-size: 11px;
+      color: var(--text3);
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      margin-top: 2px;
+    }
+    /* 底部版权 */
+    .login-footer {
+      position: fixed;
+      bottom: 16px;
+      left: 0; right: 0;
+      text-align: center;
+      color: rgba(255,255,255,0.35);
+      font-size: 12px;
+      pointer-events: none;
+    }
+  </style>
+</head>
+<body>
+  <!-- Toast -->
+  <div id="toast"></div>
+
+  <!-- Login/Register Page -->
+  <div style="padding:20px;width:100%;display:flex;align-items:center;justify-content:center;min-height:100vh;">
+    <div class="login-box">
+      <div class="login-logo">
+        <a href="index.html" style="display:block;text-decoration:none;">
+          <div class="login-logo-icon">★</div>
+          <div class="login-title">智汇AI党建平台</div>
+          <div class="login-sub">智慧党建 · 数字引领</div>
+          <div class="login-brand-tagline">Smart Party Building Platform</div>
+        </a>
+      </div>
+
+      <!-- 登录/注册切换标签 -->
+      <div class="login-tabs">
+        <div class="login-tab active" id="loginTab" onclick="switchToLogin()">登录</div>
+        <div class="login-tab" id="registerTab" onclick="switchToRegister()">注册</div>
+      </div>
+
+      <!-- 登录表单 -->
+      <form id="loginForm" class="login-form" onsubmit="event.preventDefault(); doLogin();">
+        <div class="form-group">
+          <label class="form-label">账号</label>
+          <input class="form-input" id="loginUser" placeholder="请输入账号" autocomplete="username">
+        </div>
+        <div class="form-group">
+          <label class="form-label">密码</label>
+          <input class="form-input" id="loginPass" type="password" placeholder="请输入密码" autocomplete="current-password">
+        </div>
+        <button class="btn btn-red" type="submit" style="width:100%;justify-content:center;padding:14px;">登 录</button>
+        <button class="btn btn-outline" type="button" style="width:100%;justify-content:center;padding:12px;margin-top:12px;border-color:var(--red);color:var(--red);" onclick="doGuestLogin()">👤 访客登录（浏览功能）</button>
+      </form>
+
+      <!-- 注册表单 -->
+      <form id="registerForm" class="login-form hidden" onsubmit="event.preventDefault(); doRegister();">
+        <div class="login-hint" style="color:var(--blue);">
+          注册新用户，享受完整的学习和答题功能
+        </div>
+        <div class="form-group">
+          <label class="form-label">用户名<span style="color:var(--red);"> *</span></label>
+          <input class="form-input" id="registerUser" placeholder="请输入用户名（用于登录）" autocomplete="username">
+        </div>
+        <div class="form-group">
+          <label class="form-label">密码<span style="color:var(--red);"> *</span></label>
+          <input class="form-input" id="registerPass" type="password" placeholder="请输入密码（至少6位）" autocomplete="new-password">
+        </div>
+        <div class="form-group">
+          <label class="form-label">确认密码<span style="color:var(--red);"> *</span></label>
+          <input class="form-input" id="registerConfirmPass" type="password" placeholder="请再次输入密码" autocomplete="new-password">
+        </div>
+        <div class="form-group">
+          <label class="form-label">真实姓名<span style="color:var(--red);"> *</span></label>
+          <input class="form-input" id="registerName" placeholder="请输入真实姓名">
+        </div>
+        <div class="form-group">
+          <label class="form-label">电子邮箱</label>
+          <input class="form-input" id="registerEmail" type="email" placeholder="请输入电子邮箱（可选）">
+        </div>
+        <div class="form-group">
+          <label class="form-label">手机号码</label>
+          <input class="form-input" id="registerPhone" placeholder="请输入手机号码（可选）">
+        </div>
+        <button class="btn btn-blue" type="submit" style="width:100%;justify-content:center;padding:14px;">注 册</button>
+      </form>
+
+      <div style="margin-top:20px;text-align:center;">
+        <a href="index.html" style="color:var(--text3);font-size:13px;">← 返回首页</a>
+      </div>
+    </div>
+  </div>
+
+  <div class="login-footer">© 2026 智汇ai党建平台</div>
+
+  <script src="common-enhanced.js?v=20260427-15"></script>
+  <script>
+    // 切换到登录表单
+    function switchToLogin() {
+      document.getElementById('loginTab').classList.add('active');
+      document.getElementById('registerTab').classList.remove('active');
+      document.getElementById('loginForm').classList.remove('hidden');
+      document.getElementById('registerForm').classList.add('hidden');
+    }
+
+    // 切换到注册表单
+    function switchToRegister() {
+      document.getElementById('registerTab').classList.add('active');
+      document.getElementById('loginTab').classList.remove('active');
+      document.getElementById('registerForm').classList.remove('hidden');
+      document.getElementById('loginForm').classList.add('hidden');
+    }
+
+    // 处理Enter键
+    document.addEventListener('DOMContentLoaded', function() {
+      // 登录表单Enter键
+      document.getElementById('loginUser')?.addEventListener('keypress', function(e) {
+        if (e.key === 'Enter') doLogin();
+      });
+      document.getElementById('loginPass')?.addEventListener('keypress', function(e) {
+        if (e.key === 'Enter') doLogin();
+      });
+
+      // 注册表单Enter键
+      document.getElementById('registerUser')?.addEventListener('keypress', function(e) {
+        if (e.key === 'Enter') doRegister();
+      });
+      document.getElementById('registerPass')?.addEventListener('keypress', function(e) {
+        if (e.key === 'Enter') doRegister();
+      });
+      document.getElementById('registerConfirmPass')?.addEventListener('keypress', function(e) {
+        if (e.key === 'Enter') doRegister();
+      });
+    });
+  </script>
+</body>
+</html>
+
+
+
+
+
+
