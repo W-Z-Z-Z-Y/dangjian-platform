@@ -1,0 +1,2421 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>后台管理 - 智汇AI党建平台</title>
+  <link rel="stylesheet" href="styles.css?v=20260427-3">
+  <style>
+    .admin-layout { display: flex; min-height: calc(100vh - var(--nav-h)); }
+    body { padding-top: var(--nav-h); }
+    .img-upload-area { border: 2px dashed var(--border); border-radius: 10px; padding: 12px; background: var(--bg); }
+    .img-file-input { display: none; }
+    .img-upload-btn { display: inline-flex; align-items: center; gap: 6px; background: var(--red-bg); color: var(--red); border: 1px solid var(--red); padding: 8px 16px; border-radius: 6px; cursor: pointer; font-size: 13px; font-weight: 500; }
+    .img-upload-btn:hover { background: var(--red); color: #fff; }
+    .img-url-input { width: 100%; margin-top: 8px; padding: 8px 12px; border: 1px solid var(--border); border-radius: 6px; background: var(--bg2); color: var(--text); font-size: 13px; }
+    .img-preview-wrap { margin-top: 10px; position: relative; display: none; }
+    .img-preview-wrap img { width: 100%; height: 160px; object-fit: cover; border-radius: 8px; display: block; }
+    .img-preview-del { position: absolute; top: 6px; right: 6px; width: 24px; height: 24px; background: rgba(0,0,0,0.6); color: #fff; border: none; border-radius: 50%; cursor: pointer; font-size: 14px; line-height: 24px; text-align: center; }
+    .img-preview-del:hover { background: var(--red); }
+  </style>
+</head>
+<body>
+  <!-- Toast -->
+  <div id="toast"></div>
+
+  <!-- Top Navigation -->
+  <nav id="topnav">
+    <div class="nav-wrap">
+      <div class="nav-logo" onclick="window.location.href='index.html'">
+        <div class="nav-logo-icon">★</div>
+        <div><div class="nav-logo-text">智汇AI党建平台</div></div>
+      </div>
+      <div class="nav-right" id="navRight" style="margin-left:auto;">
+        <button class="nav-btn" onclick="toggleTheme()">🌙 深色</button>
+        <button class="nav-btn btn-outline" onclick="window.location.href='index.html'">← 返回前台</button>
+        <button class="nav-btn nav-btn-login" onclick="window.location.href='login.html'">退出</button>
+      </div>
+    </div>
+  </nav>
+
+  <div class="admin-layout">
+    <!-- Sidebar -->
+    <div class="admin-sidebar">
+      <div class="admin-sidebar-title">⚙️ 后台管理系统</div>
+      <div class="admin-nav-group">
+        <div class="admin-nav-group-label">数据概览</div>
+        <div class="admin-nav-item active" onclick="switchAdminPage('dashboard',this)">📊 控制台</div>
+      </div>
+      <div class="admin-nav-group">
+        <div class="admin-nav-group-label">用户管理</div>
+        <div class="admin-nav-item" onclick="switchAdminPage('users',this)">👥 用户列表</div>
+      </div>
+      <div class="admin-nav-group">
+        <div class="admin-nav-group-label">内容管理</div>
+        <div class="admin-nav-item" onclick="switchAdminPage('contents',this)">📰 党建内容</div>
+        <div class="admin-nav-item" onclick="switchAdminPage('showcase-mgr',this)">🌟 社团风采</div>
+        <div class="admin-nav-item" onclick="switchAdminPage('actmgr',this)">📅 活动管理</div>
+        <div class="admin-nav-item" onclick="switchAdminPage('slides',this)">🖼️ 轮播管理</div>
+        <div class="admin-nav-item" onclick="switchAdminPage('stats',this)">📊 统计数据</div>
+      </div>
+      <div class="admin-nav-group">
+        <div class="admin-nav-group-label">题库管理</div>
+        <div class="admin-nav-item" onclick="switchAdminPage('questions',this)">📝 题目列表</div>
+        <div class="admin-nav-item" onclick="switchAdminPage('question-add',this)">➕ 添加题目</div>
+      </div>
+      <div class="admin-nav-group">
+        <div class="admin-nav-group-label">互动管理</div>
+        <div class="admin-nav-item" onclick="switchAdminPage('messages-mgr',this)">💬 留言审核</div>
+      </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="admin-main">
+      <!-- Dashboard -->
+      <div class="admin-page active" id="admin-dashboard">
+        <div class="admin-hd"><div class="admin-title">📊 控制台概览</div><div style="font-size:13px;color:var(--text3);" id="dashboardUpdatedAt">-</div></div>
+        <div class="stats-row">
+          <div class="stats-mini"><div class="stats-mini-num" style="color:var(--red);" id="dashPartyMembers">-</div><div class="stats-mini-label">党员总数</div></div>
+          <div class="stats-mini"><div class="stats-mini-num" style="color:var(--blue);" id="dashTotalUsers">-</div><div class="stats-mini-label">社团成员</div></div>
+          <div class="stats-mini"><div class="stats-mini-num" style="color:var(--gold);" id="dashActivities">-</div><div class="stats-mini-label">举办活动</div></div>
+          <div class="stats-mini"><div class="stats-mini-num" style="color:#00b45a;" id="dashPendingMessages">-</div><div class="stats-mini-label">待审核留言</div></div>
+        </div>
+        <div class="grid-2" style="gap:20px;">
+          <div class="card" style="padding:24px;">
+            <div style="font-weight:700;font-size:15px;margin-bottom:16px;">📋 待办事项</div>
+            <div style="display:flex;flex-direction:column;gap:10px;">
+              <div style="display:flex;justify-content:space-between;align-items:center;padding:10px;border-radius:6px;background:var(--red-bg);"><span style="font-size:14px;color:var(--red);">📨 待审核留言</span><span class="badge badge-red" id="pendingMsgTodoCount">-</span></div>
+              <div style="display:flex;justify-content:space-between;align-items:center;padding:10px;border-radius:6px;background:var(--blue-bg);"><span style="font-size:14px;color:var(--blue);">📝 活动报名待确认</span><span class="badge badge-blue">5条</span></div>
+            </div>
+          </div>
+          <div class="card" style="padding:24px;">
+            <div style="font-weight:700;font-size:15px;margin-bottom:16px;">📅 近期活动</div>
+            <div style="display:flex;flex-direction:column;gap:10px;">
+              <div style="padding:10px;border-left:3px solid var(--red);background:var(--bg);border-radius:0 6px 6px 0;"><div style="font-size:14px;font-weight:600;">主题党日活动</div><div style="font-size:12px;color:var(--text3);">2024-12-20 · 报名28/50</div></div>
+              <div style="padding:10px;border-left:3px solid var(--blue);background:var(--bg);border-radius:0 6px 6px 0;"><div style="font-size:14px;font-weight:600;">AI融合研讨会</div><div style="font-size:12px;color:var(--text3);">2024-12-18 · 报名15/30</div></div>
+              <div style="padding:10px;border-left:3px solid var(--gold);background:var(--bg);border-radius:0 6px 6px 0;"><div style="font-size:14px;font-weight:600;">志愿服务活动</div><div style="font-size:12px;color:var(--text3);">2024-12-22 · 报名12/20</div></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Users -->
+      <div class="admin-page" id="admin-users">
+        <div class="admin-hd">
+          <div class="admin-title">👥 用户管理</div>
+          <button class="btn btn-red btn-sm" onclick="openUserModal()">+ 新增用户</button>
+        </div>
+        <!-- 搜索筛选栏 -->
+        <div class="card" style="padding:14px 18px;margin-bottom:16px;">
+          <div style="display:flex;gap:12px;flex-wrap:wrap;align-items:center;">
+            <input class="form-input" id="userSearchInput" placeholder="🔍 搜索姓名或账号" style="flex:1;min-width:160px;max-width:260px;" oninput="filterUsers()">
+            <select class="form-select" id="userRoleFilter" onchange="filterUsers()" style="min-width:120px;">
+              <option value="">全部角色</option>
+              <option value="admin">管理员</option>
+              <option value="user">普通用户</option>
+            </select>
+            <select class="form-select" id="userStatusFilter" onchange="filterUsers()" style="min-width:120px;">
+              <option value="">全部状态</option>
+              <option value="1">正常</option>
+              <option value="0">已禁用</option>
+            </select>
+            <select class="form-select" id="userSortField" onchange="filterUsers()" style="min-width:130px;">
+              <option value="created_at_desc">注册时间 ↓</option>
+              <option value="created_at_asc">注册时间 ↑</option>
+              <option value="last_login_desc">最近登录 ↓</option>
+              <option value="last_login_asc">最近登录 ↑</option>
+              <option value="name_asc">姓名 A→Z</option>
+            </select>
+            <button class="btn btn-outline btn-sm" onclick="loadUserList()">↻ 刷新</button>
+            <span id="userCountLabel" style="color:var(--text3);font-size:13px;margin-left:4px;"></span>
+          </div>
+        </div>
+        <div class="card" style="padding:0;">
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>用户</th><th>账号</th><th>邮箱/手机</th><th>角色</th><th>状态</th>
+                  <th>最后登录</th><th>注册时间</th><th>操作</th>
+                </tr>
+              </thead>
+              <tbody id="userTableBody">
+                <tr><td colspan="8" style="text-align:center;padding:40px;color:var(--text3);">正在加载...</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- 新增/编辑用户弹窗 -->
+      <div class="modal-overlay" id="userModal" style="display:none;" onclick="if(event.target===this)closeUserModal()">
+        <div class="modal-box" style="max-width:480px;">
+          <div class="modal-title" id="userModalTitle">新增用户</div>
+          <input type="hidden" id="userEditId">
+          <div class="form-group">
+            <label class="form-label">姓名 <span style="color:var(--red)">*</span></label>
+            <input class="form-input" id="uName" placeholder="真实姓名">
+          </div>
+          <div style="display:flex;gap:12px;">
+            <div class="form-group" style="flex:1;">
+              <label class="form-label">账号 <span style="color:var(--red)">*</span></label>
+              <input class="form-input" id="uUsername" placeholder="登录账号">
+            </div>
+            <div class="form-group" style="flex:1;">
+              <label class="form-label">角色</label>
+              <select class="form-select" id="uRole">
+                <option value="user">普通用户</option>
+                <option value="admin">管理员</option>
+              </select>
+            </div>
+          </div>
+          <div class="form-group" id="uPasswordGroup">
+            <label class="form-label">密码 <span style="color:var(--red)">*</span></label>
+            <input class="form-input" id="uPassword" type="password" placeholder="初始密码（至少4位）">
+          </div>
+          <div style="display:flex;gap:12px;">
+            <div class="form-group" style="flex:1;">
+              <label class="form-label">邮箱</label>
+              <input class="form-input" id="uEmail" type="email" placeholder="可选">
+            </div>
+            <div class="form-group" style="flex:1;">
+              <label class="form-label">手机号</label>
+              <input class="form-input" id="uPhone" placeholder="可选">
+            </div>
+          </div>
+          <div class="form-group" id="uStatusGroup" style="display:none;">
+            <label class="form-label">账号状态</label>
+            <select class="form-select" id="uIsActive">
+              <option value="1">正常</option>
+              <option value="0">禁用</option>
+            </select>
+          </div>
+          <div style="display:flex;gap:12px;margin-top:24px;">
+            <button class="btn btn-red" style="flex:1;" onclick="saveUser()">保存</button>
+            <button class="btn btn-outline" style="flex:1;" onclick="closeUserModal()">取消</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- 重置密码弹窗 -->
+      <div class="modal-overlay" id="resetPwdModal" style="display:none;" onclick="if(event.target===this)closeResetPwdModal()">
+        <div class="modal-box" style="max-width:380px;">
+          <div class="modal-title">🔑 重置密码</div>
+          <input type="hidden" id="resetPwdUserId">
+          <div class="form-group">
+            <label class="form-label">用户：<strong id="resetPwdUserName"></strong></label>
+          </div>
+          <div class="form-group">
+            <label class="form-label">新密码 <span style="color:var(--red)">*</span></label>
+            <input class="form-input" id="resetPwdValue" type="password" placeholder="至少4位">
+          </div>
+          <div class="form-group">
+            <label class="form-label">确认密码 <span style="color:var(--red)">*</span></label>
+            <input class="form-input" id="resetPwdConfirm" type="password" placeholder="再次输入">
+          </div>
+          <div style="display:flex;gap:12px;margin-top:24px;">
+            <button class="btn btn-red" style="flex:1;" onclick="doResetPassword()">确认重置</button>
+            <button class="btn btn-outline" style="flex:1;" onclick="closeResetPwdModal()">取消</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Contents -->
+      <div class="admin-page" id="admin-contents">
+        <div class="admin-hd"><div class="admin-title">📰 党建内容管理</div><button class="btn btn-red btn-sm" onclick="openNewsModal()">+ 发布内容</button></div>
+        <div class="card" style="padding:0;">
+          <div class="table-wrap">
+            <table>
+              <thead><tr><th>ID</th><th>标题</th><th>分类</th><th>日期</th><th>操作</th></tr></thead>
+              <tbody id="newsTableBody">
+                <tr><td colspan="5" style="text-align:center;padding:40px;color:var(--text3);">正在加载...</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <div class="card" style="padding:0;margin-top:18px;">
+          <div style="padding:14px 18px;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;">
+            <div style="display:flex;align-items:center;gap:10px;">
+              <div style="font-weight:700;">党建引领其他板块</div>
+              <select class="form-select" id="partyExtraCategory" onchange="loadPartyExtraList()" style="min-width:170px;">
+                <option value="culture">红色文化</option>
+              </select>
+            </div>
+            <button class="btn btn-red btn-sm" onclick="openPartyExtraModal()">+ 添加当前分类内容</button>
+          </div>
+          <div class="table-wrap">
+            <table>
+              <thead><tr><th>ID</th><th>标题</th><th>标签</th><th id="partyExtraCol4">日期/副标题</th><th>操作</th></tr></thead>
+              <tbody id="partyExtraTableBody">
+                <tr><td colspan="5" style="text-align:center;padding:40px;color:var(--text3);">请选择分类后加载...</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- Activities -->
+      <div class="admin-page" id="admin-actmgr">
+        <div class="admin-hd"><div class="admin-title">📅 活动管理</div><button class="btn btn-red btn-sm" onclick="openActivityModal()">+ 发布活动</button></div>
+        <div class="card" style="padding:0;">
+          <div class="table-wrap">
+            <table>
+              <thead><tr><th>ID</th><th>活动名称</th><th>时间</th><th>地点</th><th>状态</th><th>报名</th><th>操作</th></tr></thead>
+              <tbody id="actTableBody">
+                <tr><td colspan="7" style="text-align:center;padding:40px;color:var(--text3);">正在加载...</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- Slides -->
+      <div class="admin-page" id="admin-slides">
+        <div class="admin-hd"><div class="admin-title">🖼️ 轮播图管理</div><button class="btn btn-red btn-sm" onclick="openSlideModal()">+ 添加轮播</button></div>
+        <div class="card" style="padding:0;">
+          <div class="table-wrap">
+            <table>
+              <thead><tr><th>ID</th><th>标签</th><th>标题</th><th>链接</th><th>操作</th></tr></thead>
+              <tbody id="slidesTableBody">
+                <tr><td colspan="5" style="text-align:center;padding:40px;color:var(--text3);">正在加载...</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- Stats -->
+      <div class="admin-page" id="admin-stats">
+        <div class="admin-hd"><div class="admin-title">📊 统计数据管理</div><button class="btn btn-outline btn-sm" onclick="loadStats()">↻ 刷新</button></div>
+        <div class="card" style="padding:24px;max-width:500px;">
+          <div class="form-group">
+            <label class="form-label">党支部数量</label>
+            <input class="form-input" id="statBranches" type="number" min="0">
+          </div>
+          <div class="form-group">
+            <label class="form-label">党员人数</label>
+            <input class="form-input" id="statMembers" type="number" min="0" readonly style="background:var(--bg);cursor:not-allowed;">
+            <div style="font-size:12px;color:var(--text3);margin-top:6px;">实时统计项，由系统自动计算</div>
+          </div>
+          <div class="form-group">
+            <label class="form-label">举办活动数</label>
+            <input class="form-input" id="statActivities" type="number" min="0" readonly style="background:var(--bg);cursor:not-allowed;">
+            <div style="font-size:12px;color:var(--text3);margin-top:6px;">实时统计项，由系统自动计算</div>
+          </div>
+          <div class="form-group">
+            <label class="form-label">党课参与率 (%)</label>
+            <input class="form-input" id="statRate" type="number" min="0" max="100">
+          </div>
+          <div style="font-size:12px;color:var(--text3);margin:6px 0 14px;" id="statsUpdatedAt">更新时间：-</div>
+          <button class="btn btn-red" onclick="saveStats()">保存统计数据</button>
+        </div>
+      </div>
+
+      <!-- Showcase Manager -->
+      <div class="admin-page" id="admin-showcase-mgr">
+        <div class="admin-hd"><div class="admin-title">🌟 社团风采管理</div></div>
+        <div class="card" style="padding:20px;margin-bottom:18px;">
+          <div style="font-weight:700;margin-bottom:12px;">社团简介</div>
+          <div class="form-group">
+            <label class="form-label">简介段落 1</label>
+            <textarea class="form-input" id="showcaseIntro1" rows="2" placeholder="请输入简介内容"></textarea>
+          </div>
+          <div class="form-group">
+            <label class="form-label">简介段落 2</label>
+            <textarea class="form-input" id="showcaseIntro2" rows="2" placeholder="请输入简介内容"></textarea>
+          </div>
+          <div class="form-group">
+            <label class="form-label">简介段落 3</label>
+            <textarea class="form-input" id="showcaseIntro3" rows="2" placeholder="请输入简介内容"></textarea>
+          </div>
+          <div class="grid-4" style="gap:12px;">
+            <div class="form-group">
+              <label class="form-label">社团成员数</label>
+              <input class="form-input" id="showcaseStatMembers" type="number" min="0">
+            </div>
+            <div class="form-group">
+              <label class="form-label">优秀支部年数</label>
+              <input class="form-input" id="showcaseStatExcellentYears" type="number" min="0">
+            </div>
+            <div class="form-group">
+              <label class="form-label">党建活动数</label>
+              <input class="form-input" id="showcaseStatActivities" type="number" min="0">
+            </div>
+            <div class="form-group">
+              <label class="form-label">荣誉奖项数</label>
+              <input class="form-input" id="showcaseStatHonors" type="number" min="0">
+            </div>
+          </div>
+          <div style="margin-top:8px;">
+            <button class="btn btn-red btn-sm" onclick="saveShowcaseIntro()">保存社团简介</button>
+          </div>
+        </div>
+
+        <div class="card" style="padding:0;margin-bottom:18px;">
+          <div style="padding:16px 18px;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;">
+            <div style="font-weight:700;">成员风采</div>
+            <button class="btn btn-red btn-sm" onclick="openShowcaseModal('members')">+ 添加成员</button>
+          </div>
+          <div class="table-wrap">
+            <table>
+              <thead><tr><th>姓名</th><th>岗位</th><th>专业</th><th>身份</th><th>操作</th></tr></thead>
+              <tbody id="showcaseMembersBody">
+                <tr><td colspan="5" style="text-align:center;padding:30px;color:var(--text3);">正在加载...</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <div class="grid-2" style="gap:20px;align-items:start;">
+          <div class="card" style="padding:0;">
+            <div style="padding:16px 18px;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;">
+              <div style="font-weight:700;">党建+AI活动</div>
+              <button class="btn btn-red btn-sm" onclick="openShowcaseModal('activities')">+ 添加活动</button>
+            </div>
+            <div class="table-wrap">
+              <table>
+                <thead><tr><th>标题</th><th>标签</th><th>日期</th><th>操作</th></tr></thead>
+                <tbody id="showcaseActivitiesBody">
+                  <tr><td colspan="4" style="text-align:center;padding:30px;color:var(--text3);">正在加载...</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <div class="card" style="padding:0;">
+            <div style="padding:16px 18px;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;">
+              <div style="font-weight:700;">荣誉成果</div>
+              <button class="btn btn-red btn-sm" onclick="openShowcaseModal('honors')">+ 添加荣誉</button>
+            </div>
+            <div class="table-wrap">
+              <table>
+                <thead><tr><th>名称</th><th>级别</th><th>日期</th><th>操作</th></tr></thead>
+                <tbody id="showcaseHonorsBody">
+                  <tr><td colspan="4" style="text-align:center;padding:30px;color:var(--text3);">正在加载...</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Showcase Modal -->
+      <div class="modal-overlay" id="showcaseModal" style="display:none;" onclick="if(event.target===this)closeShowcaseModal()">
+        <div class="modal-box" style="max-width:560px;">
+          <div class="modal-title" id="showcaseModalTitle">添加风采条目</div>
+          <input type="hidden" id="showcaseCategory">
+          <input type="hidden" id="showcaseEditId">
+
+          <div class="form-group">
+            <label class="form-label" id="showcaseTitleLabel">标题 <span style="color:var(--red);">*</span></label>
+            <input class="form-input" id="showcaseTitle" placeholder="请输入标题">
+          </div>
+          <div style="display:flex;gap:12px;">
+            <div class="form-group" style="flex:1;">
+              <label class="form-label" id="showcaseTagLabel">标签</label>
+              <input class="form-input" id="showcaseTag" placeholder="如：AI融合">
+            </div>
+            <div class="form-group" style="flex:1;">
+              <label class="form-label" id="showcaseDateLabel">日期</label>
+              <input class="form-input" id="showcaseDate" placeholder="如：2024-12-20">
+            </div>
+          </div>
+          <div style="display:flex;gap:12px;">
+            <div class="form-group" style="flex:1;">
+              <label class="form-label" id="showcaseIconLabel">图标</label>
+              <input class="form-input" id="showcaseIcon" placeholder="如：🏆 / 🤖">
+            </div>
+            <div class="form-group" style="flex:1;">
+              <label class="form-label" id="showcaseLevelLabel">级别</label>
+              <input class="form-input" id="showcaseLevel" placeholder="荣誉级别（活动可留空）">
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="form-label">内容说明</label>
+            <textarea class="form-input" id="showcaseContent" rows="4" placeholder="请输入简要说明"></textarea>
+          </div>
+          <div class="form-group">
+            <label class="form-label" id="showcaseImageLabel">配图（可选）</label>
+            <div class="img-upload-row">
+              <input type="file" accept="image/*" id="showcaseImageFile" class="img-file-input" onchange="previewImageFile(this,'showcaseImgPreviewWrap','showcaseImgPreview','showcaseImageData')">
+              <label for="showcaseImageFile" class="img-upload-btn">📷 选择图片</label>
+              <input class="img-url-input" id="showcaseImageUrl" placeholder="或粘贴图片网址" oninput="previewImageUrl(this.value,'showcaseImgPreviewWrap','showcaseImgPreview','showcaseImageData')">
+              <input type="hidden" id="showcaseImageData">
+            </div>
+            <div class="img-preview-wrap" id="showcaseImgPreviewWrap" style="display:none;">
+              <img id="showcaseImgPreview" class="img-preview" alt="社团风采图片预览">
+              <button class="img-preview-del" onclick="clearImage('showcaseImgPreviewWrap','showcaseImgPreview','showcaseImageData','showcaseImageUrl','showcaseImageFile')">×</button>
+            </div>
+          </div>
+
+          <div style="display:flex;gap:12px;margin-top:24px;">
+            <button class="btn btn-red" style="flex:1;" onclick="saveShowcaseItem()">保存</button>
+            <button class="btn btn-outline" style="flex:1;" onclick="closeShowcaseModal()">取消</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Messages -->
+      <div class="admin-page" id="admin-messages-mgr">
+        <div class="admin-hd"><div class="admin-title">💬 留言审核管理</div></div>
+        <div class="card" style="padding:0;">
+          <div class="table-wrap">
+            <table>
+              <thead><tr><th>留言人</th><th>内容摘要</th><th>类型</th><th>状态</th><th>时间</th><th>操作</th></tr></thead>
+              <tbody id="messageAuditTableBody">
+                <tr><td colspan="6" style="text-align:center;padding:40px;color:var(--text3);">正在加载留言...</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- Questions List -->
+      <div class="admin-page" id="admin-questions">
+        <div class="admin-hd"><div class="admin-title">📝 题目管理</div><button class="btn btn-red btn-sm" onclick="refreshQuestionsList()">🔄 刷新列表</button></div>
+        <div class="card" style="padding:0;">
+          <div class="table-wrap">
+            <table id="questionsTable">
+              <thead><tr><th>ID</th><th>题型</th><th>题目内容</th><th>正确答案</th><th>分值</th><th>分类</th><th>操作</th></tr></thead>
+              <tbody id="questionsTableBody">
+                <tr><td colspan="7" style="text-align:center;padding:40px;color:var(--text3);">正在加载题目列表...</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- Add Question -->
+      <div class="admin-page" id="admin-question-add">
+        <div class="admin-hd"><div class="admin-title">➕ 添加题目</div></div>
+        <div class="card" style="padding:24px;">
+          <div id="questionFormContainer">
+            <div class="form-group">
+              <label class="form-label">题目类型<span style="color:var(--red);"> *</span></label>
+              <select class="form-select" id="questionType" onchange="updateQuestionForm()">
+                <option value="">请选择题型</option>
+                <option value="单选">单选题</option>
+                <option value="多选">多选题</option>
+                <option value="判断">判断题</option>
+              </select>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label">题干<span style="color:var(--red);"> *</span></label>
+              <textarea class="form-input" id="questionTitle" rows="3" placeholder="请输入题目内容"></textarea>
+            </div>
+
+            <div id="optionsContainer" style="display:none;">
+              <div class="form-group">
+                <label class="form-label">选项A<span style="color:var(--red);"> *</span></label>
+                <input class="form-input" id="optionA" placeholder="请输入选项A内容">
+              </div>
+              <div class="form-group">
+                <label class="form-label">选项B<span style="color:var(--red);"> *</span></label>
+                <input class="form-input" id="optionB" placeholder="请输入选项B内容">
+              </div>
+              <div id="optionCGroup" style="display:none;">
+                <div class="form-group">
+                  <label class="form-label">选项C</label>
+                  <input class="form-input" id="optionC" placeholder="请输入选项C内容（可选）">
+                </div>
+              </div>
+              <div id="optionDGroup" style="display:none;">
+                <div class="form-group">
+                  <label class="form-label">选项D</label>
+                  <input class="form-input" id="optionD" placeholder="请输入选项D内容（可选）">
+                </div>
+              </div>
+            </div>
+
+            <div id="answerContainer">
+              <div class="form-group">
+                <label class="form-label">正确答案<span style="color:var(--red);"> *</span></label>
+                <div id="answerOptions"></div>
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label">分值</label>
+              <input class="form-input" id="questionScore" type="number" min="1" max="10" value="2">
+            </div>
+
+            <div class="form-group">
+              <label class="form-label">分类</label>
+              <input class="form-input" id="questionCategory" value="党建知识">
+            </div>
+
+            <div style="display:flex;gap:12px;margin-top:32px;">
+              <button class="btn btn-red" style="flex:1;" onclick="submitQuestion()">提交题目</button>
+              <button class="btn btn-outline" style="flex:1;" onclick="resetQuestionForm()">重置表单</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- News Modal -->
+      <div class="modal-overlay" id="newsModal" style="display:none;">
+        <div class="modal" style="max-width:550px;max-height:90vh;overflow-y:auto;">
+          <div class="modal-header">
+            <h3 id="newsModalTitle">📰 发布新闻</h3>
+            <button class="modal-close" onclick="closeNewsModal()">×</button>
+          </div>
+          <div class="modal-body">
+            <input type="hidden" id="newsEditId">
+            <div class="form-group">
+              <label class="form-label">标题 <span style="color:var(--red);">*</span></label>
+              <input class="form-input" id="newsTitle" placeholder="新闻标题">
+            </div>
+            <div class="form-group">
+              <label class="form-label">分类标签 <span style="color:var(--red);">*</span></label>
+              <select class="form-select" id="newsTag">
+                <option value="要闻">要闻</option>
+                <option value="通知">通知</option>
+                <option value="荣誉">荣誉</option>
+                <option value="活动">活动</option>
+                <option value="AI党建">AI党建</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label class="form-label">图标</label>
+              <input class="form-input" id="newsIcon" value="🚩" placeholder="emoji图标">
+            </div>
+            <div class="form-group">
+              <label class="form-label">日期</label>
+              <input class="form-input" id="newsDate" type="date">
+            </div>
+            <div class="form-group">
+              <label class="form-label">新闻正文</label>
+              <textarea class="form-input" id="newsContent" rows="8" placeholder="请输入新闻正文内容，可分段录入"></textarea>
+            </div>
+            <div class="form-group">
+              <label class="form-label">配图</label>
+              <div class="img-upload-area">
+                <input type="file" accept="image/*" id="newsImageFile" class="img-file-input" onchange="previewImageFile(this,'newsImgPreviewWrap','newsImgPreview','newsImageData')">
+                <label for="newsImageFile" class="img-upload-btn">📷 选择图片</label>
+                <input class="img-url-input" id="newsImageUrl" placeholder="或粘贴图片网址" oninput="previewImageUrl(this.value,'newsImgPreviewWrap','newsImgPreview','newsImageData')">
+                <input type="hidden" id="newsImageData">
+                <div class="img-preview-wrap" id="newsImgPreviewWrap">
+                  <img id="newsImgPreview" src="" alt="预览">
+                  <button class="img-preview-del" onclick="clearImage('newsImgPreviewWrap','newsImgPreview','newsImageData','newsImageUrl','newsImageFile')">×</button>
+                </div>
+              </div>
+            </div>
+            <div style="display:flex;gap:12px;margin-top:24px;">
+              <button class="btn btn-red" style="flex:1;" onclick="saveNews()">保存</button>
+              <button class="btn btn-outline" style="flex:1;" onclick="closeNewsModal()">取消</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Party Extra Modal -->
+      <div class="modal-overlay" id="partyExtraModal" style="display:none;" onclick="if(event.target===this)closePartyExtraModal()">
+        <div class="modal" style="max-width:550px;max-height:90vh;overflow-y:auto;">
+          <div class="modal-header">
+            <h3 id="partyExtraModalTitle">添加内容</h3>
+            <button class="modal-close" onclick="closePartyExtraModal()">×</button>
+          </div>
+          <div class="modal-body">
+            <input type="hidden" id="partyExtraEditId">
+            <input type="hidden" id="partyExtraModalCategory">
+
+            <div class="form-group">
+              <label class="form-label">标题 <span style="color:var(--red);">*</span></label>
+              <input class="form-input" id="partyExtraTitle" placeholder="请输入标题">
+            </div>
+            <div style="display:flex;gap:12px;">
+              <div class="form-group" style="flex:1;">
+                <label class="form-label">标签</label>
+                <input class="form-input" id="partyExtraTag" placeholder="如：文件/专题/AI党建">
+              </div>
+              <div class="form-group" style="flex:1;">
+                <label class="form-label">标签颜色</label>
+                <select class="form-select" id="partyExtraTagColor">
+                  <option value="red">红色</option>
+                  <option value="blue">蓝色</option>
+                  <option value="gold">金色</option>
+                </select>
+              </div>
+            </div>
+            <div style="display:flex;gap:12px;">
+              <div class="form-group" style="flex:1;">
+                <label class="form-label">图标（卡片分类可用）</label>
+                <input class="form-input" id="partyExtraIcon" placeholder="如：🚩">
+              </div>
+              <div class="form-group" style="flex:1;">
+                <label class="form-label" id="partyExtraMetaLabel">日期/副标题</label>
+                <input class="form-input" id="partyExtraMeta" placeholder="如：2024-12-20 或 专题学习">
+              </div>
+            </div>
+            <div class="form-group">
+              <label class="form-label">正文/简介</label>
+              <textarea class="form-input" id="partyExtraContent" rows="5" placeholder="可选，用于详情页展示"></textarea>
+            </div>
+            <div class="form-group">
+              <label class="form-label">配图（可选）</label>
+              <div class="img-upload-area">
+                <input type="file" accept="image/*" id="partyExtraImageFile" class="img-file-input" onchange="previewImageFile(this,'partyExtraImgPreviewWrap','partyExtraImgPreview','partyExtraImageData')">
+                <label for="partyExtraImageFile" class="img-upload-btn">📷 选择图片</label>
+                <input class="img-url-input" id="partyExtraImageUrl" placeholder="或粘贴图片网址" oninput="previewImageUrl(this.value,'partyExtraImgPreviewWrap','partyExtraImgPreview','partyExtraImageData')">
+                <input type="hidden" id="partyExtraImageData">
+                <div class="img-preview-wrap" id="partyExtraImgPreviewWrap">
+                  <img id="partyExtraImgPreview" src="" alt="预览">
+                  <button class="img-preview-del" onclick="clearImage('partyExtraImgPreviewWrap','partyExtraImgPreview','partyExtraImageData','partyExtraImageUrl','partyExtraImageFile')">×</button>
+                </div>
+              </div>
+            </div>
+
+            <div style="display:flex;gap:12px;margin-top:24px;">
+              <button class="btn btn-red" style="flex:1;" onclick="savePartyExtraItem()">保存</button>
+              <button class="btn btn-outline" style="flex:1;" onclick="closePartyExtraModal()">取消</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Activity Modal -->
+      <div class="modal-overlay" id="activityModal" style="display:none;">
+        <div class="modal" style="max-width:550px;max-height:90vh;overflow-y:auto;">
+          <div class="modal-header">
+            <h3 id="actModalTitle">📅 发布活动</h3>
+            <button class="modal-close" onclick="closeActivityModal()">×</button>
+          </div>
+          <div class="modal-body">
+            <input type="hidden" id="actEditId">
+            <div class="form-group">
+              <label class="form-label">活动名称 <span style="color:var(--red);">*</span></label>
+              <input class="form-input" id="actTitle" placeholder="活动名称">
+            </div>
+            <div class="form-group">
+              <label class="form-label">分类标签</label>
+              <input class="form-input" id="actTag" value="党日活动" placeholder="如：党日活动、学习教育">
+            </div>
+            <div class="form-group">
+              <label class="form-label">状态</label>
+              <select class="form-select" id="actStatus">
+                <option value="报名中">报名中</option>
+                <option value="已结束">已结束</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label class="form-label">时间</label>
+              <input class="form-input" id="actDate" placeholder="如：2024-12-20 14:00">
+            </div>
+            <div class="form-group">
+              <label class="form-label">地点</label>
+              <input class="form-input" id="actLocation" placeholder="活动地点">
+            </div>
+            <div class="form-group">
+              <label class="form-label">活动内容</label>
+              <textarea class="form-input" id="actContent" rows="8" placeholder="请输入活动介绍、流程安排、注意事项等内容"></textarea>
+            </div>
+            <div class="form-group">
+              <label class="form-label">回顾文字（活动结束后）</label>
+              <textarea class="form-input" id="actReviewText" rows="4" placeholder="可填写活动总结、亮点回顾、收获感想"></textarea>
+            </div>
+            <div class="form-group">
+              <label class="form-label">回顾媒体链接（图片/视频）</label>
+              <textarea class="form-input" id="actReviewMedia" rows="4" placeholder="每行一个URL，支持图片和 mp4/webm 视频链接"></textarea>
+            </div>
+            <div style="display:flex;gap:12px;">
+              <div class="form-group" style="flex:1;">
+                <label class="form-label">已报名</label>
+                <input class="form-input" id="actEnrolled" type="number" min="0" value="0">
+              </div>
+              <div class="form-group" style="flex:1;">
+                <label class="form-label">容量</label>
+                <input class="form-input" id="actCapacity" type="number" min="1" value="50">
+              </div>
+            </div>
+            <div class="form-group">
+              <label class="form-label">活动封面图</label>
+              <div class="img-upload-area">
+                <input type="file" accept="image/*" id="actImageFile" class="img-file-input" onchange="previewImageFile(this,'actImgPreviewWrap','actImgPreview','actImageData')">
+                <label for="actImageFile" class="img-upload-btn">📷 选择图片</label>
+                <input class="img-url-input" id="actImageUrl" placeholder="或粘贴图片网址" oninput="previewImageUrl(this.value,'actImgPreviewWrap','actImgPreview','actImageData')">
+                <input type="hidden" id="actImageData">
+                <div class="img-preview-wrap" id="actImgPreviewWrap">
+                  <img id="actImgPreview" src="" alt="预览">
+                  <button class="img-preview-del" onclick="clearImage('actImgPreviewWrap','actImgPreview','actImageData','actImageUrl','actImageFile')">×</button>
+                </div>
+              </div>
+            </div>
+            <div style="display:flex;gap:12px;margin-top:24px;">
+              <button class="btn btn-red" style="flex:1;" onclick="saveActivity()">保存</button>
+              <button class="btn btn-outline" style="flex:1;" onclick="closeActivityModal()">取消</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Slide Modal -->
+      <div class="modal-overlay" id="slideModal" style="display:none;">
+        <div class="modal" style="max-width:550px;max-height:90vh;overflow-y:auto;">
+          <div class="modal-header">
+            <h3 id="slideModalTitle">🖼️ 添加轮播</h3>
+            <button class="modal-close" onclick="closeSlideModal()">×</button>
+          </div>
+          <div class="modal-body">
+            <input type="hidden" id="slideEditId">
+            <div class="form-group">
+              <label class="form-label">标签 <span style="color:var(--red);">*</span></label>
+              <input class="form-input" id="slideTag" placeholder="如：党建活动">
+            </div>
+            <div class="form-group">
+              <label class="form-label">标题 <span style="color:var(--red);">*</span></label>
+              <textarea class="form-input" id="slideTitle" rows="2" placeholder="支持用&lt;br&gt;换行"></textarea>
+            </div>
+            <div class="form-group">
+              <label class="form-label">描述</label>
+              <input class="form-input" id="slideDesc" placeholder="简短描述">
+            </div>
+            <div class="form-group">
+              <label class="form-label">链接页面</label>
+              <input class="form-input" id="slideLink" value="party-detail.html" placeholder="跳转页面">
+            </div>
+            <div class="form-group">
+              <label class="form-label">按钮文字</label>
+              <input class="form-input" id="slideLinkText" value="查看详情 →">
+            </div>
+            <div class="form-group">
+              <label class="form-label">背景渐变</label>
+              <input class="form-input" id="slideBg" value="linear-gradient(135deg,#4a0000,#c90000,#165DFF)" placeholder="CSS渐变（无背景图时生效）">
+            </div>
+            <div class="form-group">
+              <label class="form-label">背景图片（可选，优先于渐变）</label>
+              <div class="img-upload-area">
+                <input type="file" accept="image/*" id="slideImageFile" class="img-file-input" onchange="previewImageFile(this,'slideImgPreviewWrap','slideImgPreview','slideImageData')">
+                <label for="slideImageFile" class="img-upload-btn">📷 选择图片</label>
+                <input class="img-url-input" id="slideImageUrl" placeholder="或粘贴图片网址" oninput="previewImageUrl(this.value,'slideImgPreviewWrap','slideImgPreview','slideImageData')">
+                <input type="hidden" id="slideImageData">
+                <div class="img-preview-wrap" id="slideImgPreviewWrap">
+                  <img id="slideImgPreview" src="" alt="预览">
+                  <button class="img-preview-del" onclick="clearImage('slideImgPreviewWrap','slideImgPreview','slideImageData','slideImageUrl','slideImageFile')">×</button>
+                </div>
+              </div>
+            </div>
+            <div style="display:flex;gap:12px;margin-top:24px;">
+              <button class="btn btn-red" style="flex:1;" onclick="saveSlide()">保存</button>
+              <button class="btn btn-outline" style="flex:1;" onclick="closeSlideModal()">取消</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Edit Question Modal -->
+      <div class="modal-overlay" id="editQuestionModal" style="display:none;">
+        <div class="modal" style="max-width:600px;max-height:90vh;overflow-y:auto;">
+          <div class="modal-header">
+            <h3>✏️ 编辑题目</h3>
+            <button class="modal-close" onclick="closeEditQuestionModal()">×</button>
+          </div>
+          <div class="modal-body">
+            <div id="editQuestionFormContainer">
+              <div class="form-group">
+                <label class="form-label">题目类型<span style="color:var(--red);"> *</span></label>
+                <select class="form-select" id="editQuestionType" onchange="updateEditQuestionForm()">
+                  <option value="">请选择题型</option>
+                  <option value="单选">单选题</option>
+                  <option value="多选">多选题</option>
+                  <option value="判断">判断题</option>
+                </select>
+              </div>
+
+              <div class="form-group">
+                <label class="form-label">题干<span style="color:var(--red);"> *</span></label>
+                <textarea class="form-input" id="editQuestionTitle" rows="3" placeholder="请输入题目内容"></textarea>
+              </div>
+
+              <div id="editOptionsContainer" style="display:none;">
+                <div class="form-group">
+                  <label class="form-label">选项A<span style="color:var(--red);"> *</span></label>
+                  <input class="form-input" id="editOptionA" placeholder="请输入选项A内容">
+                </div>
+                <div class="form-group">
+                  <label class="form-label">选项B<span style="color:var(--red);"> *</span></label>
+                  <input class="form-input" id="editOptionB" placeholder="请输入选项B内容">
+                </div>
+                <div id="editOptionCGroup" style="display:none;">
+                  <div class="form-group">
+                    <label class="form-label">选项C</label>
+                    <input class="form-input" id="editOptionC" placeholder="请输入选项C内容（可选）">
+                  </div>
+                </div>
+                <div id="editOptionDGroup" style="display:none;">
+                  <div class="form-group">
+                    <label class="form-label">选项D</label>
+                    <input class="form-input" id="editOptionD" placeholder="请输入选项D内容（可选）">
+                  </div>
+                </div>
+              </div>
+
+              <div id="editAnswerContainer">
+                <div class="form-group">
+                  <label class="form-label">正确答案<span style="color:var(--red);"> *</span></label>
+                  <div id="editAnswerOptions"></div>
+                </div>
+              </div>
+
+              <div class="form-group">
+                <label class="form-label">分值</label>
+                <input class="form-input" id="editQuestionScore" type="number" min="1" max="10" value="2">
+              </div>
+
+              <div class="form-group">
+                <label class="form-label">分类</label>
+                <input class="form-input" id="editQuestionCategory" value="党建知识">
+              </div>
+
+              <input type="hidden" id="editQuestionId">
+
+              <div style="display:flex;gap:12px;margin-top:32px;">
+                <button class="btn btn-red" style="flex:1;" onclick="saveEditedQuestion()">保存修改</button>
+                <button class="btn btn-outline" style="flex:1;" onclick="closeEditQuestionModal()">取消</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="common-enhanced.js?v=20260427-15"></script>
+
+  <script>
+    // 题库管理相关函数
+    let questionsData = [];
+
+    // 刷新题目列表
+    async function refreshQuestionsList() {
+      await loadQuestionsList();
+    }
+
+    // 加载题目列表
+    async function loadQuestionsList() {
+      const tbody = document.getElementById('questionsTableBody');
+      if (!tbody) return;
+
+      tbody.innerHTML = '<tr><td colspan="7" style="text-align:center;padding:40px;color:var(--text3);">正在加载题目列表...</td></tr>';
+
+      try {
+        // 使用已有的getQuestions函数
+        const questions = await getQuestions();
+        questionsData = questions;
+
+        if (questions.length === 0) {
+          tbody.innerHTML = '<tr><td colspan="7" style="text-align:center;padding:40px;color:var(--text3);">暂无题目数据</td></tr>';
+          return;
+        }
+
+        let html = '';
+        questions.forEach((q, index) => {
+          // 简略显示题目内容
+          const shortTitle = q.title.length > 50 ? q.title.substring(0, 47) + '...' : q.title;
+
+          html += `
+            <tr>
+              <td>${q.id}</td>
+              <td><span class="badge ${q.type === '单选' ? 'badge-blue' : q.type === '多选' ? 'badge-gold' : 'badge-green'}">${q.type}</span></td>
+              <td title="${q.title}">${shortTitle}</td>
+              <td><code style="background:var(--bg2);padding:2px 6px;border-radius:4px;">${q.answer}</code></td>
+              <td>${q.score || 2}</td>
+              <td>${q.category || '党建知识'}</td>
+              <td>
+                <button class="action-btn act-edit" onclick="editQuestion(${q.id})">编辑</button>
+                <button class="action-btn act-del" onclick="deleteQuestionConfirm(${q.id})">删除</button>
+              </td>
+            </tr>
+          `;
+        });
+
+        tbody.innerHTML = html;
+        showToast(`✅ 加载了 ${questions.length} 道题目`);
+      } catch (error) {
+        console.error('加载题目列表失败:', error);
+        tbody.innerHTML = '<tr><td colspan="7" style="text-align:center;padding:40px;color:var(--red);">加载失败，请检查API连接</td></tr>';
+      }
+    }
+
+    // ============================================================
+    // 留言审核管理
+    // ============================================================
+    function escapeAdminText(text) {
+      return String(text || '')
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#39;');
+    }
+
+    function statusBadge(status) {
+      if (status === '已通过') return '<span class="badge badge-green">已通过</span>';
+      if (status === '已驳回') return '<span class="badge badge-gray">已驳回</span>';
+      return '<span class="badge badge-gold">待审核</span>';
+    }
+
+    function typeBadge(type) {
+      const t = String(type || '意见建议');
+      if (t === '活动反馈') return '<span class="badge badge-blue">活动反馈</span>';
+      if (t === '学习心得') return '<span class="badge badge-green">学习心得</span>';
+      if (t === '其他') return '<span class="badge badge-gray">其他</span>';
+      return '<span class="badge badge-blue">意见建议</span>';
+    }
+
+    function shortText(text, maxLen = 26) {
+      const val = String(text || '');
+      return val.length > maxLen ? `${val.slice(0, maxLen)}...` : val;
+    }
+
+    async function loadMessageAuditList() {
+      const tbody = document.getElementById('messageAuditTableBody');
+      if (!tbody) return;
+      tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;padding:40px;color:var(--text3);">正在加载留言...</td></tr>';
+
+      try {
+        const resp = await apiRequest('/content/messages/admin?limit=300', { noCache: true });
+        const list = Array.isArray(resp.data) ? resp.data : [];
+
+        if (!list.length) {
+          tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;padding:40px;color:var(--text3);">暂无留言数据</td></tr>';
+          return;
+        }
+
+        tbody.innerHTML = list.map(item => {
+          const id = Number(item.id);
+          const name = escapeAdminText(item.name || '匿名用户');
+          const content = escapeAdminText(item.content || '');
+          const contentShort = escapeAdminText(shortText(item.content || ''));
+          const type = typeBadge(item.type);
+          const status = statusBadge(item.status);
+          const time = escapeAdminText(String(item.createdAt || '-').slice(0, 16));
+
+          const passBtn = item.status !== '已通过'
+            ? `<button class="action-btn act-approve" onclick="reviewMessage(${id}, '已通过')">通过</button>`
+            : '';
+          const rejectBtn = item.status !== '已驳回'
+            ? `<button class="action-btn" style="background:var(--bg2);color:var(--text2);" onclick="reviewMessage(${id}, '已驳回')">驳回</button>`
+            : '';
+          const deleteBtn = `<button class="action-btn act-del" onclick="deleteMessage(${id})">删除</button>`;
+
+          return `
+            <tr>
+              <td>${name}</td>
+              <td style="max-width:220px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;" title="${content}">${contentShort}</td>
+              <td>${type}</td>
+              <td>${status}</td>
+              <td style="font-size:12px;color:var(--text3);">${time}</td>
+              <td style="white-space:nowrap;">${passBtn} ${rejectBtn} ${deleteBtn}</td>
+            </tr>
+          `;
+        }).join('');
+      } catch (error) {
+        tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;padding:40px;color:var(--red);">加载失败，请检查后端服务</td></tr>';
+      }
+    }
+
+    async function reviewMessage(id, status) {
+      const actionText = status === '已通过' ? '通过' : '驳回';
+      if (!confirm(`确认${actionText}这条留言吗？`)) return;
+
+      try {
+        const resp = await apiRequest(`/content/messages/${id}/review`, {
+          method: 'PUT',
+          body: JSON.stringify({ status })
+        });
+        if (resp.success) {
+          showToast(`✅ 留言已${actionText}`);
+          loadMessageAuditList();
+        }
+      } catch (error) {
+        // apiRequest 统一提示
+      }
+    }
+
+    async function deleteMessage(id) {
+      if (!confirm('确认删除这条留言吗？删除后不可恢复。')) return;
+
+      try {
+        const resp = await apiRequest(`/content/messages/${id}`, { method: 'DELETE' });
+        if (resp.success) {
+          showToast('✅ 留言已删除');
+          loadMessageAuditList();
+        }
+      } catch (error) {
+        // apiRequest 统一提示
+      }
+    }
+
+    // 删除题目确认
+    async function deleteQuestionConfirm(questionId) {
+      if (!confirm(`确定要删除题目 #${questionId} 吗？此操作不可恢复！`)) {
+        return;
+      }
+
+      try {
+        const result = await deleteQuestion(questionId);
+        if (result.success) {
+          await loadQuestionsList();
+        }
+      } catch (error) {
+        console.error('删除题目失败:', error);
+        showToast('❌ 删除题目失败');
+      }
+    }
+
+    // 编辑题目
+    async function editQuestion(questionId) {
+      try {
+        // 获取题目详情
+        const result = await getQuestionDetail(questionId);
+        if (!result.success || !result.question) {
+          showToast('❌ 获取题目信息失败');
+          return;
+        }
+
+        const question = result.question;
+
+        // 设置隐藏的题目ID
+        document.getElementById('editQuestionId').value = questionId;
+
+        // 设置题型并更新表单
+        document.getElementById('editQuestionType').value = question.type;
+        updateEditQuestionForm();
+
+        // 设置其他字段
+        document.getElementById('editQuestionTitle').value = question.title || '';
+        document.getElementById('editQuestionScore').value = question.score || 2;
+        document.getElementById('editQuestionCategory').value = question.category || '党建知识';
+
+        // 设置选项
+        if (question.type === '单选' || question.type === '多选') {
+          document.getElementById('editOptionA').value = question.option_a || '';
+          document.getElementById('editOptionB').value = question.option_b || '';
+          document.getElementById('editOptionC').value = question.option_c || '';
+          document.getElementById('editOptionD').value = question.option_d || '';
+        } else if (question.type === '判断') {
+          document.getElementById('editOptionA').value = '对';
+          document.getElementById('editOptionB').value = '错';
+        }
+
+        // 设置正确答案
+        setTimeout(() => {
+          const answer = question.answer || '';
+          if (question.type === '单选' || question.type === '判断') {
+            const answerInput = document.querySelector(`#editAnswerOptions input[value="${answer}"]`);
+            if (answerInput) {
+              answerInput.checked = true;
+            }
+          } else if (question.type === '多选') {
+            const answers = answer.split(',');
+            answers.forEach(ans => {
+              const answerInput = document.querySelector(`#editAnswerOptions input[value="${ans.trim()}"]`);
+              if (answerInput) {
+                answerInput.checked = true;
+              }
+            });
+          }
+        }, 100);
+
+        // 显示模态框
+        document.getElementById('editQuestionModal').style.display = 'flex';
+      } catch (error) {
+        console.error('加载题目失败:', error);
+        showToast('❌ 加载题目信息失败');
+      }
+    }
+
+    // 根据题型更新表单
+    function updateQuestionForm() {
+      const type = document.getElementById('questionType').value;
+      const optionsContainer = document.getElementById('optionsContainer');
+      const optionCGroup = document.getElementById('optionCGroup');
+      const optionDGroup = document.getElementById('optionDGroup');
+      const answerOptions = document.getElementById('answerOptions');
+
+      // 清空之前的答案选项
+      answerOptions.innerHTML = '';
+
+      if (!type) {
+        optionsContainer.style.display = 'none';
+        return;
+      }
+
+      if (type === '单选' || type === '多选') {
+        optionsContainer.style.display = 'block';
+        optionCGroup.style.display = 'block';
+        optionDGroup.style.display = 'block';
+
+        // 创建答案选项
+        const options = ['A', 'B', 'C', 'D'];
+        if (type === '单选') {
+          // 单选题：单选按钮
+          options.forEach(opt => {
+            const id = `answer${opt}`;
+            answerOptions.innerHTML += `
+              <div style="display:inline-block;margin-right:16px;">
+                <input type="radio" id="${id}" name="answer" value="${opt}">
+                <label for="${id}" style="margin-left:4px;">选项${opt}</label>
+              </div>
+            `;
+          });
+        } else {
+          // 多选题：复选框
+          options.forEach(opt => {
+            const id = `answer${opt}`;
+            answerOptions.innerHTML += `
+              <div style="display:inline-block;margin-right:16px;">
+                <input type="checkbox" id="${id}" name="answer" value="${opt}">
+                <label for="${id}" style="margin-left:4px;">选项${opt}</label>
+              </div>
+            `;
+          });
+        }
+      } else if (type === '判断') {
+        optionsContainer.style.display = 'block';
+        optionCGroup.style.display = 'none';
+        optionDGroup.style.display = 'none';
+
+        // 判断题：对/错
+        answerOptions.innerHTML = `
+          <div style="display:inline-block;margin-right:16px;">
+            <input type="radio" id="answerTrue" name="answer" value="对">
+            <label for="answerTrue" style="margin-left:4px;">对</label>
+          </div>
+          <div style="display:inline-block;">
+            <input type="radio" id="answerFalse" name="answer" value="错">
+            <label for="answerFalse" style="margin-left:4px;">错</label>
+          </div>
+        `;
+      }
+    }
+
+    // 提交题目
+    async function submitQuestion() {
+      // 获取表单数据
+      const type = document.getElementById('questionType').value;
+      const title = document.getElementById('questionTitle').value.trim();
+      const score = parseInt(document.getElementById('questionScore').value) || 2;
+      const category = document.getElementById('questionCategory').value.trim() || '党建知识';
+
+      // 验证必填字段
+      if (!type || !title) {
+        showToast('❌ 请填写题目类型和题干');
+        return;
+      }
+
+      // 获取答案
+      let answer = '';
+      if (type === '单选' || type === '判断') {
+        const selected = document.querySelector('input[name="answer"]:checked');
+        if (!selected) {
+          showToast('❌ 请选择正确答案');
+          return;
+        }
+        answer = selected.value;
+      } else if (type === '多选') {
+        const selected = Array.from(document.querySelectorAll('input[name="answer"]:checked'))
+          .map(cb => cb.value)
+          .sort()
+          .join(',');
+        if (selected.length === 0) {
+          showToast('❌ 请至少选择一个正确答案');
+          return;
+        }
+        answer = selected;
+      }
+
+      // 获取选项（单选/多选题）
+      let option_a = '', option_b = '', option_c = '', option_d = '';
+      if (type === '单选' || type === '多选') {
+        option_a = document.getElementById('optionA').value.trim();
+        option_b = document.getElementById('optionB').value.trim();
+        option_c = document.getElementById('optionC').value.trim();
+        option_d = document.getElementById('optionD').value.trim();
+
+        if (!option_a || !option_b) {
+          showToast('❌ 选项A和B是必填项');
+          return;
+        }
+      } else if (type === '判断') {
+        option_a = '对';
+        option_b = '错';
+      }
+
+      // 构建题目数据
+      const questionData = {
+        type: type,
+        title: title,
+        answer: answer,
+        score: score,
+        category: category
+      };
+
+      // 添加选项
+      if (option_a) questionData.option_a = option_a;
+      if (option_b) questionData.option_b = option_b;
+      if (option_c) questionData.option_c = option_c;
+      if (option_d) questionData.option_d = option_d;
+
+      // 显示加载状态
+      const submitBtn = document.querySelector('#questionFormContainer button[onclick="submitQuestion()"]');
+      const originalText = submitBtn.textContent;
+      submitBtn.textContent = '提交中...';
+      submitBtn.disabled = true;
+
+      try {
+        // 调用API
+        const result = await addQuestion(questionData);
+
+        if (result.success) {
+          showToast(`✅ 题目添加成功！ID: ${result.insertId}`);
+          resetQuestionForm();
+
+          // 如果是管理员，可以自动跳转到题目列表
+          if (isAdmin()) {
+            setTimeout(() => {
+              switchAdminPage('questions');
+              loadQuestionsList();
+            }, 1000);
+          }
+        } else {
+          showToast(`❌ 添加失败: ${result.message || '未知错误'}`);
+        }
+      } catch (error) {
+        console.error('提交题目失败:', error);
+        showToast('❌ 提交题目失败，请检查网络连接');
+      } finally {
+        submitBtn.textContent = originalText;
+        submitBtn.disabled = false;
+      }
+    }
+
+    // 重置表单
+    function resetQuestionForm() {
+      document.getElementById('questionType').value = '';
+      document.getElementById('questionTitle').value = '';
+      document.getElementById('optionA').value = '';
+      document.getElementById('optionB').value = '';
+      document.getElementById('optionC').value = '';
+      document.getElementById('optionD').value = '';
+      document.getElementById('questionScore').value = '2';
+      document.getElementById('questionCategory').value = '党建知识';
+
+      const answerOptions = document.getElementById('answerOptions');
+      answerOptions.innerHTML = '';
+
+      const optionsContainer = document.getElementById('optionsContainer');
+      optionsContainer.style.display = 'none';
+
+      showToast('表单已重置');
+    }
+
+    // ============================================================
+    // 用户管理
+    // ============================================================
+    let allUsers = [];
+
+    // 用户头像颜色池
+    const _avatarColors = ['#c90000','#165DFF','#C9A84C','#00b45a','#8B00C9','#CC6600'];
+    function _userAvatar(name) {
+      const ch = (name || '?').charAt(0);
+      const color = _avatarColors[(ch.codePointAt(0) || 0) % _avatarColors.length];
+      return `<div style="width:32px;height:32px;border-radius:50%;background:${color};color:#fff;display:inline-flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;flex-shrink:0;">${ch}</div>`;
+    }
+
+    async function loadUserList() {
+      document.getElementById('userTableBody').innerHTML =
+        '<tr><td colspan="8" style="text-align:center;padding:40px;color:var(--text3);">正在加载...</td></tr>';
+      // 修复：登录时存的是 authToken 而非 token
+      const token = localStorage.getItem('authToken');
+      try {
+        const res = await fetch('/api/users', {
+          headers: { 'Authorization': 'Bearer ' + token }
+        });
+        const data = await res.json();
+        if (!data.success) { showToast('❌ ' + data.message); return; }
+        allUsers = data.data;
+        filterUsers();
+      } catch (e) {
+        document.getElementById('userTableBody').innerHTML =
+          '<tr><td colspan="8" style="text-align:center;padding:40px;color:var(--red);">加载失败，请检查后端服务</td></tr>';
+      }
+    }
+
+    function filterUsers() {
+      const kw = (document.getElementById('userSearchInput').value || '').toLowerCase();
+      const role = document.getElementById('userRoleFilter').value;
+      const status = document.getElementById('userStatusFilter').value;
+      const sortVal = document.getElementById('userSortField').value;
+      let list = allUsers.filter(u => {
+        const matchKw = !kw || (u.name||'').toLowerCase().includes(kw) || (u.username||'').toLowerCase().includes(kw)
+          || (u.email||'').toLowerCase().includes(kw) || (u.phone||'').includes(kw);
+        const matchRole = !role || u.role === role;
+        const matchStatus = status === '' || String(u.is_active ? 1 : 0) === status;
+        return matchKw && matchRole && matchStatus;
+      });
+      // 排序
+      list.sort((a, b) => {
+        if (sortVal === 'created_at_desc') return (b.created_at||'') > (a.created_at||'') ? 1 : -1;
+        if (sortVal === 'created_at_asc')  return (a.created_at||'') > (b.created_at||'') ? 1 : -1;
+        if (sortVal === 'last_login_desc') return (b.last_login||'') > (a.last_login||'') ? 1 : -1;
+        if (sortVal === 'last_login_asc')  return (a.last_login||'') > (b.last_login||'') ? 1 : -1;
+        if (sortVal === 'name_asc')        return (a.name||'').localeCompare(b.name||'', 'zh');
+        return 0;
+      });
+      document.getElementById('userCountLabel').textContent = `共 ${list.length} 人（全部 ${allUsers.length} 人）`;
+      renderUserTable(list);
+    }
+
+    function renderUserTable(users) {
+      const loggedInId = Number(localStorage.getItem('userId')) || null;
+      const tbody = document.getElementById('userTableBody');
+      if (!users.length) {
+        tbody.innerHTML = '<tr><td colspan="8" style="text-align:center;padding:40px;color:var(--text3);">暂无符合条件的用户</td></tr>';
+        return;
+      }
+      tbody.innerHTML = users.map(u => {
+        const roleBadge = u.role === 'admin'
+          ? '<span class="badge badge-red">管理员</span>'
+          : '<span class="badge badge-blue">普通用户</span>';
+        const statusBadge = u.is_active
+          ? '<span class="badge badge-green">正常</span>'
+          : '<span class="badge badge-gray">已禁用</span>';
+        const isSelf = u.id === loggedInId;
+        // 图标操作按钮（带 title tooltip）
+        const editBtn = `<button class="action-btn act-edit" title="编辑用户" onclick="openUserModal(${JSON.stringify(u).replace(/"/g,'&quot;')})">✏️</button>`;
+        const pwdBtn  = `<button class="action-btn" style="background:var(--bg2);color:var(--text2);" title="重置密码" onclick="openResetPwdModal(${u.id},'${u.name}')">🔑</button>`;
+        const toggleBtn = isSelf ? '' : u.is_active
+          ? `<button class="action-btn act-edit" style="background:var(--red-bg);color:var(--red);" title="禁用账号" onclick="toggleUserStatus(${u.id},0,'${u.name}')">🚫</button>`
+          : `<button class="action-btn act-approve" title="启用账号" onclick="toggleUserStatus(${u.id},1,'${u.name}')">✅</button>`;
+        const delBtn = isSelf ? '' :
+          `<button class="action-btn act-del" title="删除用户" onclick="delUser(${u.id},'${u.name}')">🗑️</button>`;
+        const lastLogin = u.last_login ? u.last_login.slice(0,10) : '—';
+        const createdAt = u.created_at ? u.created_at.slice(0,10) : '—';
+        const contact = [u.email, u.phone].filter(Boolean).join(' / ') || '—';
+        // 自己高亮行
+        const rowStyle = isSelf ? 'background:var(--blue-bg);' : '';
+        return `<tr style="${rowStyle}">
+          <td><div style="display:flex;align-items:center;gap:8px;">${_userAvatar(u.name)}<div><div style="font-weight:600;">${u.name}</div>${isSelf ? '<div style="font-size:11px;color:var(--blue);">（当前账号）</div>' : ''}</div></div></td>
+          <td style="color:var(--text3);">${u.username}</td>
+          <td style="font-size:12px;color:var(--text3);">${contact}</td>
+          <td>${roleBadge}</td>
+          <td>${statusBadge}</td>
+          <td style="color:var(--text3);font-size:12px;">${lastLogin}</td>
+          <td style="color:var(--text3);font-size:12px;">${createdAt}</td>
+          <td style="white-space:nowrap;">${editBtn}${pwdBtn}${toggleBtn}${delBtn}</td>
+        </tr>`;
+      }).join('');
+    }
+
+    function openUserModal(data) {
+      document.getElementById('userEditId').value = data ? data.id : '';
+      document.getElementById('uName').value = data ? data.name : '';
+      document.getElementById('uUsername').value = data ? data.username : '';
+      document.getElementById('uRole').value = data ? data.role : 'user';
+      document.getElementById('uEmail').value = data ? (data.email || '') : '';
+      document.getElementById('uPhone').value = data ? (data.phone || '') : '';
+      document.getElementById('uIsActive').value = data ? (data.is_active ? '1' : '0') : '1';
+      document.getElementById('uPasswordGroup').style.display = data ? 'none' : '';
+      document.getElementById('uStatusGroup').style.display = data ? '' : 'none';
+      document.getElementById('uUsername').disabled = !!data;
+      document.getElementById('uPassword').value = '';
+      document.getElementById('userModalTitle').textContent = data ? '✏️ 编辑用户' : '➕ 新增用户';
+      document.getElementById('userModal').style.display = 'flex';
+    }
+
+    function closeUserModal() {
+      document.getElementById('userModal').style.display = 'none';
+    }
+
+    async function saveUser() {
+      const editId = document.getElementById('userEditId').value;
+      const name = document.getElementById('uName').value.trim();
+      const username = document.getElementById('uUsername').value.trim();
+      const role = document.getElementById('uRole').value;
+      const email = document.getElementById('uEmail').value.trim();
+      const phone = document.getElementById('uPhone').value.trim();
+      if (!name) { showToast('❌ 姓名不能为空'); return; }
+      const token = localStorage.getItem('authToken');
+      try {
+        let res;
+        if (editId) {
+          const is_active = parseInt(document.getElementById('uIsActive').value);
+          res = await fetch(`/api/users/${editId}`, {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token },
+            body: JSON.stringify({ name, email: email || null, phone: phone || null, role, is_active })
+          });
+        } else {
+          if (!username) { showToast('❌ 账号不能为空'); return; }
+          const password = document.getElementById('uPassword').value;
+          if (!password || password.length < 4) { showToast('❌ 密码不能少于4位'); return; }
+          res = await fetch('/api/users', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token },
+            body: JSON.stringify({ username, password, name, email: email || null, phone: phone || null, role })
+          });
+        }
+        const data = await res.json();
+        if (data.success) {
+          showToast('✅ ' + data.message);
+          closeUserModal();
+          loadUserList();
+        } else {
+          showToast('❌ ' + data.message);
+        }
+      } catch (e) {
+        showToast('❌ 请求失败，请检查后端服务');
+      }
+    }
+
+    async function toggleUserStatus(id, isActive, name) {
+      if (!confirm(`确定要${isActive ? '启用' : '禁用'}用户「${name}」吗？`)) return;
+      const token = localStorage.getItem('authToken');
+      try {
+        const res = await fetch(`/api/users/${id}`, {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token },
+          body: JSON.stringify({ is_active: isActive })
+        });
+        const data = await res.json();
+        if (data.success) { showToast(`✅ 已${isActive ? '启用' : '禁用'}用户「${name}」`); loadUserList(); }
+        else showToast('❌ ' + data.message);
+      } catch { showToast('❌ 请求失败'); }
+    }
+
+    async function delUser(id, name) {
+      if (!confirm(`确定删除用户「${name}」？此操作不可恢复！`)) return;
+      const token = localStorage.getItem('authToken');
+      try {
+        const res = await fetch(`/api/users/${id}`, {
+          method: 'DELETE',
+          headers: { 'Authorization': 'Bearer ' + token }
+        });
+        const data = await res.json();
+        if (data.success) { showToast('✅ 用户「' + name + '」已删除'); loadUserList(); }
+        else showToast('❌ ' + data.message);
+      } catch { showToast('❌ 请求失败'); }
+    }
+
+    function openResetPwdModal(id, name) {
+      document.getElementById('resetPwdUserId').value = id;
+      document.getElementById('resetPwdUserName').textContent = name;
+      document.getElementById('resetPwdValue').value = '';
+      document.getElementById('resetPwdConfirm').value = '';
+      document.getElementById('resetPwdModal').style.display = 'flex';
+    }
+
+    function closeResetPwdModal() {
+      document.getElementById('resetPwdModal').style.display = 'none';
+    }
+
+    async function doResetPassword() {
+      const id = document.getElementById('resetPwdUserId').value;
+      const pwd = document.getElementById('resetPwdValue').value;
+      const confirm2 = document.getElementById('resetPwdConfirm').value;
+      if (!pwd || pwd.length < 4) { showToast('❌ 密码不能少于4位'); return; }
+      if (pwd !== confirm2) { showToast('❌ 两次输入的密码不一致'); return; }
+      const token = localStorage.getItem('authToken');
+      try {
+        const res = await fetch(`/api/users/${id}/reset-password`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token },
+          body: JSON.stringify({ newPassword: pwd })
+        });
+        const data = await res.json();
+        if (data.success) { showToast('✅ 密码已重置'); closeResetPwdModal(); }
+        else showToast('❌ ' + data.message);
+      } catch { showToast('❌ 请求失败'); }
+    }
+
+    // ============================================================
+    // 图片上传辅助函数
+    // ============================================================
+    function previewImageFile(input, wrapId, imgId, dataId) {
+      if (input.files && input.files[0]) {
+        const file = input.files[0];
+        if (!file.type || !file.type.startsWith('image/')) {
+          showToast('❌ 请选择图片文件');
+          input.value = '';
+          return;
+        }
+        const maxSize = 5 * 1024 * 1024;
+        if (file.size > maxSize) {
+          showToast('❌ 图片过大，请控制在 5MB 以内');
+          input.value = '';
+          return;
+        }
+        const reader = new FileReader();
+        reader.onload = function(e) {
+          const imgEl = document.getElementById(imgId);
+          imgEl.onerror = function() {
+            showToast('❌ 图片预览失败，请更换图片重试');
+            imgEl.onerror = null;
+          };
+          imgEl.src = e.target.result;
+          document.getElementById(dataId).value = e.target.result;
+          document.getElementById(wrapId).style.display = 'block';
+        };
+        reader.readAsDataURL(file);
+      }
+    }
+    function previewImageUrl(url, wrapId, imgId, dataId) {
+      if (url.trim()) {
+        const imgEl = document.getElementById(imgId);
+        imgEl.onerror = function() {
+          showToast('❌ 图片地址无效，请检查链接');
+          imgEl.onerror = null;
+          imgEl.src = '';
+          document.getElementById(dataId).value = '';
+          document.getElementById(wrapId).style.display = 'none';
+        };
+        imgEl.src = url.trim();
+        document.getElementById(dataId).value = url.trim();
+        document.getElementById(wrapId).style.display = 'block';
+      } else {
+        document.getElementById(wrapId).style.display = 'none';
+        document.getElementById(dataId).value = '';
+      }
+    }
+    function clearImage(wrapId, imgId, dataId, urlId, fileId) {
+      document.getElementById(imgId).src = '';
+      document.getElementById(dataId).value = '';
+      document.getElementById(urlId).value = '';
+      document.getElementById(fileId).value = '';
+      document.getElementById(wrapId).style.display = 'none';
+    }
+    function setImageField(image, wrapId, imgId, dataId, urlInputId) {
+      if (image) {
+        document.getElementById(imgId).src = image;
+        document.getElementById(dataId).value = image;
+        document.getElementById(urlInputId).value = image.startsWith('data:') ? '' : image;
+        document.getElementById(wrapId).style.display = 'block';
+      } else {
+        document.getElementById(wrapId).style.display = 'none';
+        document.getElementById(dataId).value = '';
+        document.getElementById(urlInputId).value = '';
+      }
+    }
+
+    // ============================================================
+    // 新闻管理
+    // ============================================================
+    async function loadNewsList() {
+      const tbody = document.getElementById('newsTableBody');
+      if (!tbody) return;
+      tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;padding:40px;color:var(--text3);">正在加载...</td></tr>';
+      try {
+        const news = await getNewsList();
+        if (!news.length) { tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;padding:40px;color:var(--text3);">暂无新闻</td></tr>'; return; }
+        const tagColors = { '要闻': 'red', '通知': 'blue', '荣誉': 'gold', '活动': 'red', 'AI党建': 'blue' };
+        tbody.innerHTML = news.map(n => `<tr>
+          <td>${n.id}</td>
+          <td>${n.icon || ''} ${n.title}</td>
+          <td><span class="badge badge-${tagColors[n.tag] || 'blue'}">${n.tag}</span></td>
+          <td>${n.date}</td>
+          <td>
+            <button class="action-btn act-edit" onclick="editNews(${n.id})">编辑</button>
+            <button class="action-btn act-del" onclick="delNews(${n.id})">删除</button>
+          </td>
+        </tr>`).join('');
+      } catch (e) { tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;color:var(--red);">加载失败</td></tr>'; }
+    }
+
+    function openNewsModal(data) {
+      document.getElementById('newsEditId').value = data ? data.id : '';
+      document.getElementById('newsTitle').value = data ? data.title : '';
+      document.getElementById('newsTag').value = data ? data.tag : '要闻';
+      document.getElementById('newsIcon').value = data ? (data.icon || '🚩') : '🚩';
+      document.getElementById('newsDate').value = data ? data.date : new Date().toISOString().slice(0,10);
+      document.getElementById('newsContent').value = data ? (data.content || '') : '';
+      document.getElementById('newsImageFile').value = '';
+      setImageField(data && data.image ? data.image : '', 'newsImgPreviewWrap', 'newsImgPreview', 'newsImageData', 'newsImageUrl');
+      document.getElementById('newsModalTitle').textContent = data ? '✏️ 编辑新闻' : '📰 发布新闻';
+      document.getElementById('newsModal').style.display = 'flex';
+    }
+    function closeNewsModal() { document.getElementById('newsModal').style.display = 'none'; }
+
+    async function editNews(id) {
+      const news = await getNewsList();
+      const item = news.find(n => n.id === id);
+      if (item) openNewsModal(item);
+    }
+
+    async function saveNews() {
+      const title = document.getElementById('newsTitle').value.trim();
+      if (!title) { showToast('❌ 标题不能为空'); return; }
+      const data = {
+        title,
+        tag: document.getElementById('newsTag').value,
+        icon: document.getElementById('newsIcon').value,
+        date: document.getElementById('newsDate').value || new Date().toISOString().slice(0,10),
+        content: document.getElementById('newsContent').value.trim(),
+        tagColor: { '要闻':'red','通知':'blue','荣誉':'gold','活动':'red','AI党建':'blue' }[document.getElementById('newsTag').value] || 'blue',
+        bg: { '要闻':'linear-gradient(135deg,#4a0000,#c90000)','通知':'linear-gradient(135deg,#003a99,#165DFF)','荣誉':'linear-gradient(135deg,#5a3000,#c9a84c)','活动':'linear-gradient(135deg,#4a0000,#960000)','AI党建':'linear-gradient(135deg,#003a99,#0040CC)' }[document.getElementById('newsTag').value] || 'linear-gradient(135deg,#4a0000,#c90000)',
+        link: 'party-detail.html',
+        image: document.getElementById('newsImageData').value || ''
+      };
+      const editId = document.getElementById('newsEditId').value;
+      try {
+        const res = editId ? await updateNews(parseInt(editId), data) : await addNews(data);
+        if (res.success) { showToast('✅ ' + res.message); closeNewsModal(); loadNewsList(); }
+        else showToast('❌ ' + (res.message || '操作失败'));
+      } catch (e) { showToast('❌ 操作失败'); }
+    }
+
+    async function delNews(id) {
+      if (!confirm('确定删除该新闻？')) return;
+      try {
+        const res = await deleteNews(id);
+        if (res.success) { showToast('✅ 已删除'); loadNewsList(); }
+      } catch (e) { showToast('❌ 删除失败'); }
+    }
+
+    // ============================================================
+    // 党建引领其他分类管理（红色文化）
+    // ============================================================
+    const partyExtraMeta = {
+      culture: {
+        name: '红色文化',
+        defaultTag: '红色文化',
+        defaultIcon: '🏔️',
+        metaField: 'date',
+        metaLabel: '日期（可选）',
+        metaPlaceholder: '如：2024-12-20',
+        colTitle: '日期'
+      }
+    };
+
+    const partyExtraStore = {
+      culture: []
+    };
+
+    function getPartyExtraCategory() {
+      return document.getElementById('partyExtraCategory')?.value || 'culture';
+    }
+
+    function getPartyExtraMetaConfig(category) {
+      return partyExtraMeta[category] || partyExtraMeta.culture;
+    }
+
+    function renderPartyExtraTable(category, list) {
+      const tbody = document.getElementById('partyExtraTableBody');
+      const col4 = document.getElementById('partyExtraCol4');
+      if (!tbody || !col4) return;
+
+      const cfg = getPartyExtraMetaConfig(category);
+      col4.textContent = cfg.colTitle;
+
+      if (!list.length) {
+        tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;padding:40px;color:var(--text3);">暂无内容</td></tr>';
+        return;
+      }
+
+      tbody.innerHTML = list.map(item => {
+        const tag = item.tag || cfg.defaultTag;
+        const tagColor = item.tagColor || 'blue';
+        const metaVal = cfg.metaField === 'sub' ? (item.sub || '-') : (item.date || '-');
+        return `
+          <tr>
+            <td>${item.id}</td>
+            <td>${item.icon || ''} ${item.title || '-'}</td>
+            <td><span class="badge badge-${tagColor}">${tag}</span></td>
+            <td>${metaVal}</td>
+            <td>
+              <button class="action-btn act-edit" onclick="editPartyExtraItem('${category}', ${item.id})">编辑</button>
+              <button class="action-btn act-del" onclick="deletePartyExtraItem('${category}', ${item.id})">删除</button>
+            </td>
+          </tr>
+        `;
+      }).join('');
+    }
+
+    function normalizePartyExtraItem(category, raw, index) {
+      const cfg = getPartyExtraMetaConfig(category);
+      const tagColor = ['red', 'blue', 'gold'].includes(raw.tagColor) ? raw.tagColor : 'blue';
+      const item = {
+        ...raw,
+        id: Number(raw.id) || (index + 1),
+        title: String(raw.title || '').trim(),
+        tag: String(raw.tag || cfg.defaultTag).trim(),
+        tagColor,
+        icon: String(raw.icon || cfg.defaultIcon).trim() || cfg.defaultIcon,
+        content: String(raw.content || '').trim(),
+        image: String(raw.image || '').trim()
+      };
+      item.bg = raw.bg || (tagColor === 'red'
+        ? 'linear-gradient(135deg,#4a0000,#c90000)'
+        : (tagColor === 'gold'
+          ? 'linear-gradient(135deg,#5a3000,#c9a84c)'
+          : 'linear-gradient(135deg,#003a99,#165DFF)'));
+
+      if (cfg.metaField === 'sub') {
+        item.sub = String(raw.sub || '').trim();
+        delete item.date;
+      } else {
+        item.date = String(raw.date || '').trim();
+        delete item.sub;
+      }
+
+      return item;
+    }
+
+    async function loadPartyExtraList() {
+      const category = getPartyExtraCategory();
+      const tbody = document.getElementById('partyExtraTableBody');
+      if (!tbody) return;
+
+      tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;padding:40px;color:var(--text3);">正在加载...</td></tr>';
+      try {
+        const resp = await apiRequest(`/content/party/${category}`, { noCache: true });
+        const list = Array.isArray(resp.data) ? resp.data : [];
+        partyExtraStore[category] = list.map((item, idx) => normalizePartyExtraItem(category, item, idx));
+        renderPartyExtraTable(category, partyExtraStore[category]);
+      } catch (e) {
+        tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;padding:40px;color:var(--red);">加载失败</td></tr>';
+      }
+    }
+
+    function openPartyExtraModal(category, data) {
+      const cat = category || getPartyExtraCategory();
+      const cfg = getPartyExtraMetaConfig(cat);
+
+      document.getElementById('partyExtraModalCategory').value = cat;
+      document.getElementById('partyExtraEditId').value = data ? data.id : '';
+      document.getElementById('partyExtraTitle').value = data ? (data.title || '') : '';
+      document.getElementById('partyExtraTag').value = data ? (data.tag || cfg.defaultTag) : cfg.defaultTag;
+      document.getElementById('partyExtraTagColor').value = data ? (data.tagColor || 'blue') : 'blue';
+      document.getElementById('partyExtraIcon').value = data ? (data.icon || cfg.defaultIcon) : cfg.defaultIcon;
+
+      const metaVal = cfg.metaField === 'sub'
+        ? (data ? (data.sub || '') : '')
+        : (data ? (data.date || '') : '');
+      document.getElementById('partyExtraMeta').value = metaVal;
+      document.getElementById('partyExtraMetaLabel').textContent = cfg.metaLabel;
+      document.getElementById('partyExtraMeta').placeholder = cfg.metaPlaceholder;
+
+      document.getElementById('partyExtraContent').value = data ? (data.content || '') : '';
+      document.getElementById('partyExtraImageFile').value = '';
+      setImageField(data && data.image ? data.image : '', 'partyExtraImgPreviewWrap', 'partyExtraImgPreview', 'partyExtraImageData', 'partyExtraImageUrl');
+
+      document.getElementById('partyExtraModalTitle').textContent = `${data ? '✏️ 编辑' : '➕ 添加'}${cfg.name}`;
+      document.getElementById('partyExtraModal').style.display = 'flex';
+    }
+
+    function closePartyExtraModal() {
+      document.getElementById('partyExtraModal').style.display = 'none';
+    }
+
+    function editPartyExtraItem(category, id) {
+      const list = partyExtraStore[category] || [];
+      const item = list.find(row => Number(row.id) === Number(id));
+      if (item) openPartyExtraModal(category, item);
+    }
+
+    async function savePartyExtraItem() {
+      const category = document.getElementById('partyExtraModalCategory').value || getPartyExtraCategory();
+      const cfg = getPartyExtraMetaConfig(category);
+      const title = document.getElementById('partyExtraTitle').value.trim();
+      if (!title) {
+        showToast('❌ 标题不能为空');
+        return;
+      }
+
+      const list = (partyExtraStore[category] || []).slice();
+      const editId = Number(document.getElementById('partyExtraEditId').value || 0);
+      const nextId = list.length ? Math.max(...list.map(row => Number(row.id) || 0)) + 1 : 1;
+
+      const draft = {
+        id: editId || nextId,
+        title,
+        tag: document.getElementById('partyExtraTag').value.trim() || cfg.defaultTag,
+        tagColor: document.getElementById('partyExtraTagColor').value || 'blue',
+        icon: document.getElementById('partyExtraIcon').value.trim() || cfg.defaultIcon,
+        content: document.getElementById('partyExtraContent').value.trim(),
+        image: document.getElementById('partyExtraImageData').value || ''
+      };
+
+      const metaVal = document.getElementById('partyExtraMeta').value.trim();
+      if (cfg.metaField === 'sub') {
+        draft.sub = metaVal;
+      } else {
+        draft.date = metaVal;
+      }
+
+      const item = normalizePartyExtraItem(category, draft, list.length);
+      const idx = list.findIndex(row => Number(row.id) === Number(item.id));
+      if (idx >= 0) list[idx] = item;
+      else list.unshift(item);
+
+      try {
+        const resp = await apiRequest(`/content/party/${category}`, {
+          method: 'PUT',
+          body: JSON.stringify(list)
+        });
+        if (resp.success) {
+          partyExtraStore[category] = list;
+          showToast('✅ 内容已更新');
+          closePartyExtraModal();
+          renderPartyExtraTable(category, list);
+        }
+      } catch (e) {
+        // apiRequest 统一错误提示
+      }
+    }
+
+    async function deletePartyExtraItem(category, id) {
+      if (!confirm('确定删除该条内容吗？')) return;
+
+      const list = (partyExtraStore[category] || []).filter(row => Number(row.id) !== Number(id));
+      try {
+        const resp = await apiRequest(`/content/party/${category}`, {
+          method: 'PUT',
+          body: JSON.stringify(list)
+        });
+        if (resp.success) {
+          partyExtraStore[category] = list;
+          showToast('✅ 已删除');
+          renderPartyExtraTable(category, list);
+        }
+      } catch (e) {
+        // apiRequest 统一错误提示
+      }
+    }
+
+    // ============================================================
+    // 活动管理
+    // ============================================================
+    async function loadActList() {
+      const tbody = document.getElementById('actTableBody');
+      if (!tbody) return;
+      tbody.innerHTML = '<tr><td colspan="7" style="text-align:center;padding:40px;color:var(--text3);">正在加载...</td></tr>';
+      try {
+        const acts = await getActivities();
+        if (!acts.length) { tbody.innerHTML = '<tr><td colspan="7" style="text-align:center;padding:40px;color:var(--text3);">暂无活动</td></tr>'; return; }
+        tbody.innerHTML = acts.map(a => `<tr>
+          <td>${a.id}</td>
+          <td>${a.icon || ''} ${a.title}</td>
+          <td>${a.date}</td>
+          <td>${a.location || '-'}</td>
+          <td><span class="badge badge-${a.status === '报名中' ? 'green' : 'gray'}">${a.status}</span></td>
+          <td>${a.enrolled || 0}/${a.capacity || '-'}</td>
+          <td>
+            <button class="action-btn act-edit" onclick="editAct(${a.id})">编辑</button>
+            <button class="action-btn act-del" onclick="delAct(${a.id})">删除</button>
+          </td>
+        </tr>`).join('');
+      } catch (e) { tbody.innerHTML = '<tr><td colspan="7" style="text-align:center;color:var(--red);">加载失败</td></tr>'; }
+    }
+
+    function openActivityModal(data) {
+      document.getElementById('actEditId').value = data ? data.id : '';
+      document.getElementById('actTitle').value = data ? data.title : '';
+      document.getElementById('actTag').value = data ? data.tag : '党日活动';
+      document.getElementById('actStatus').value = data ? data.status : '报名中';
+      document.getElementById('actDate').value = data ? data.date : '';
+      document.getElementById('actLocation').value = data ? (data.location || '') : '';
+      document.getElementById('actContent').value = data ? (data.content || '') : '';
+      document.getElementById('actReviewText').value = data ? (data.reviewText || '') : '';
+      document.getElementById('actReviewMedia').value = data && Array.isArray(data.reviewMedia)
+        ? data.reviewMedia.join('\n')
+        : '';
+      document.getElementById('actEnrolled').value = data ? (data.enrolled || 0) : 0;
+      document.getElementById('actCapacity').value = data ? (data.capacity || 50) : 50;
+      document.getElementById('actImageFile').value = '';
+      setImageField(data && data.image ? data.image : '', 'actImgPreviewWrap', 'actImgPreview', 'actImageData', 'actImageUrl');
+      document.getElementById('actModalTitle').textContent = data ? '✏️ 编辑活动' : '📅 发布活动';
+      document.getElementById('activityModal').style.display = 'flex';
+    }
+    function closeActivityModal() { document.getElementById('activityModal').style.display = 'none'; }
+
+    async function editAct(id) {
+      const acts = await getActivities();
+      const item = acts.find(a => a.id === id);
+      if (item) openActivityModal(item);
+    }
+
+    async function saveActivity() {
+      const title = document.getElementById('actTitle').value.trim();
+      if (!title) { showToast('❌ 活动名称不能为空'); return; }
+      const status = document.getElementById('actStatus').value;
+      const content = document.getElementById('actContent').value.trim();
+      const reviewText = document.getElementById('actReviewText').value.trim();
+      const reviewMedia = document.getElementById('actReviewMedia').value
+        .split(/\r?\n/)
+        .map(item => item.trim())
+        .filter(Boolean);
+      const data = {
+        title,
+        tag: document.getElementById('actTag').value,
+        tagColor: 'red',
+        status,
+        statusColor: status === '报名中' ? 'green' : 'gray',
+        date: document.getElementById('actDate').value,
+        location: document.getElementById('actLocation').value,
+        content,
+        reviewText,
+        reviewMedia,
+        enrolled: parseInt(document.getElementById('actEnrolled').value) || 0,
+        capacity: parseInt(document.getElementById('actCapacity').value) || 50,
+        icon: '🚩',
+        bg: 'linear-gradient(135deg,#4a0000,#c90000)',
+        btnColor: status === '报名中' ? 'red' : 'outline',
+        btnText: status === '报名中' ? '立即报名' : '查看回顾',
+        image: document.getElementById('actImageData').value || ''
+      };
+      const editId = document.getElementById('actEditId').value;
+      try {
+        const res = editId ? await updateActivity(parseInt(editId), data) : await addActivity(data);
+        if (res.success) { showToast('✅ ' + res.message); closeActivityModal(); loadActList(); }
+        else showToast('❌ ' + (res.message || '操作失败'));
+      } catch (e) { showToast('❌ 操作失败'); }
+    }
+
+    async function delAct(id) {
+      if (!confirm('确定删除该活动？')) return;
+      try {
+        const res = await deleteActivity(id);
+        if (res.success) { showToast('✅ 已删除'); loadActList(); }
+      } catch (e) { showToast('❌ 删除失败'); }
+    }
+
+    // ============================================================
+    // 社团风采管理
+    // ============================================================
+    const showcaseStore = {
+      intro: { about: [], stats: {} },
+      members: [],
+      activities: [],
+      honors: []
+    };
+
+    async function loadShowcaseMgr() {
+      try {
+        const [introResp, membersResp, activitiesResp, honorsResp] = await Promise.all([
+          apiRequest('/content/showcase/intro', { noCache: true }),
+          apiRequest('/content/showcase/members', { noCache: true }),
+          apiRequest('/content/showcase/activities', { noCache: true }),
+          apiRequest('/content/showcase/honors', { noCache: true })
+        ]);
+        showcaseStore.intro = introResp.data && typeof introResp.data === 'object' ? introResp.data : { about: [], stats: {} };
+        showcaseStore.members = Array.isArray(membersResp.data) ? membersResp.data : [];
+        showcaseStore.activities = Array.isArray(activitiesResp.data) ? activitiesResp.data : [];
+        showcaseStore.honors = Array.isArray(honorsResp.data) ? honorsResp.data : [];
+        renderShowcaseIntroForm();
+        renderShowcaseTables();
+      } catch (e) {
+        document.getElementById('showcaseMembersBody').innerHTML = '<tr><td colspan="5" style="text-align:center;padding:30px;color:var(--red);">加载失败</td></tr>';
+        document.getElementById('showcaseActivitiesBody').innerHTML = '<tr><td colspan="4" style="text-align:center;padding:30px;color:var(--red);">加载失败</td></tr>';
+        document.getElementById('showcaseHonorsBody').innerHTML = '<tr><td colspan="4" style="text-align:center;padding:30px;color:var(--red);">加载失败</td></tr>';
+      }
+    }
+
+    function renderShowcaseIntroForm() {
+      const intro = showcaseStore.intro || {};
+      const about = Array.isArray(intro.about) ? intro.about : [];
+      const stats = intro.stats || {};
+
+      document.getElementById('showcaseIntro1').value = about[0] || '';
+      document.getElementById('showcaseIntro2').value = about[1] || '';
+      document.getElementById('showcaseIntro3').value = about[2] || '';
+      document.getElementById('showcaseStatMembers').value = Number(stats.members || 0);
+      document.getElementById('showcaseStatExcellentYears').value = Number(stats.excellentYears || 0);
+      document.getElementById('showcaseStatActivities').value = Number(stats.activities || 0);
+      document.getElementById('showcaseStatHonors').value = Number(stats.honors || 0);
+    }
+
+    function renderShowcaseTables() {
+      const memberBody = document.getElementById('showcaseMembersBody');
+      const actBody = document.getElementById('showcaseActivitiesBody');
+      const honorBody = document.getElementById('showcaseHonorsBody');
+
+      if (!showcaseStore.members.length) {
+        memberBody.innerHTML = '<tr><td colspan="5" style="text-align:center;padding:30px;color:var(--text3);">暂无成员条目</td></tr>';
+      } else {
+        memberBody.innerHTML = showcaseStore.members.map(item => `
+          <tr>
+            <td>${item.name || '-'}</td>
+            <td>${item.role || '-'}</td>
+            <td>${item.major || '-'}</td>
+            <td><span class="badge badge-${item.badgeColor || 'blue'}">${item.badgeText || '成员'}</span></td>
+            <td>
+              <button class="action-btn act-edit" onclick="editShowcaseItem('members', ${item.id})">编辑</button>
+              <button class="action-btn act-del" onclick="deleteShowcaseItem('members', ${item.id})">删除</button>
+            </td>
+          </tr>
+        `).join('');
+      }
+
+      if (!showcaseStore.activities.length) {
+        actBody.innerHTML = '<tr><td colspan="4" style="text-align:center;padding:30px;color:var(--text3);">暂无活动条目</td></tr>';
+      } else {
+        actBody.innerHTML = showcaseStore.activities.map(item => `
+          <tr>
+            <td>${item.title || '-'}</td>
+            <td><span class="badge badge-${item.tagColor || 'blue'}">${item.tag || '活动'}</span></td>
+            <td>${item.date || '-'}</td>
+            <td>
+              <button class="action-btn act-edit" onclick="editShowcaseItem('activities', ${item.id})">编辑</button>
+              <button class="action-btn act-del" onclick="deleteShowcaseItem('activities', ${item.id})">删除</button>
+            </td>
+          </tr>
+        `).join('');
+      }
+
+      if (!showcaseStore.honors.length) {
+        honorBody.innerHTML = '<tr><td colspan="4" style="text-align:center;padding:30px;color:var(--text3);">暂无荣誉条目</td></tr>';
+      } else {
+        honorBody.innerHTML = showcaseStore.honors.map(item => `
+          <tr>
+            <td>${item.title || '-'}</td>
+            <td>${item.level || '-'}</td>
+            <td>${item.date || '-'}</td>
+            <td>
+              <button class="action-btn act-edit" onclick="editShowcaseItem('honors', ${item.id})">编辑</button>
+              <button class="action-btn act-del" onclick="deleteShowcaseItem('honors', ${item.id})">删除</button>
+            </td>
+          </tr>
+        `).join('');
+      }
+    }
+
+    function openShowcaseModal(category, data) {
+      document.getElementById('showcaseCategory').value = category;
+      document.getElementById('showcaseEditId').value = data ? String(data.id || '') : '';
+      document.getElementById('showcaseTitle').value = data ? (data.title || '') : '';
+      document.getElementById('showcaseTag').value = data ? (data.tag || '') : '';
+      document.getElementById('showcaseDate').value = data ? (data.date || '') : '';
+      document.getElementById('showcaseIcon').value = data ? (data.icon || '') : '';
+      document.getElementById('showcaseLevel').value = data ? (data.level || '') : '';
+      document.getElementById('showcaseContent').value = data ? (data.content || '') : '';
+      document.getElementById('showcaseImageFile').value = '';
+      setImageField(data && data.image ? data.image : '', 'showcaseImgPreviewWrap', 'showcaseImgPreview', 'showcaseImageData', 'showcaseImageUrl');
+
+      if (category === 'members') {
+        document.getElementById('showcaseTitle').value = data ? (data.name || '') : '';
+        document.getElementById('showcaseTag').value = data ? (data.role || '') : '';
+        document.getElementById('showcaseDate').value = data ? (data.major || '') : '';
+        document.getElementById('showcaseIcon').value = data ? (data.avatar || '') : '';
+        document.getElementById('showcaseLevel').value = data ? (data.badgeText || '') : '';
+      }
+
+      const isHonor = category === 'honors';
+      const isMember = category === 'members';
+      document.getElementById('showcaseTitleLabel').innerHTML = `${isMember ? '姓名' : '标题'} <span style="color:var(--red);">*</span>`;
+      document.getElementById('showcaseTagLabel').textContent = isMember ? '岗位' : '标签';
+      document.getElementById('showcaseDateLabel').textContent = isMember ? '专业' : '日期';
+      document.getElementById('showcaseIconLabel').textContent = isMember ? '头像（emoji）' : '图标';
+      document.getElementById('showcaseLevelLabel').textContent = isMember ? '身份标签' : (isHonor ? '级别' : '级别（可选）');
+      document.getElementById('showcaseImageLabel').textContent = isMember ? '成员照片（可选，优先于 emoji）' : (isHonor ? '荣誉配图（可选）' : '活动配图（可选）');
+      document.getElementById('showcaseModalTitle').textContent = `${data ? '编辑' : '添加'}${isMember ? '成员风采' : (isHonor ? '荣誉成果' : '党建+AI活动')}`;
+      document.getElementById('showcaseModal').style.display = 'flex';
+    }
+
+    function closeShowcaseModal() {
+      document.getElementById('showcaseModal').style.display = 'none';
+      clearImage('showcaseImgPreviewWrap', 'showcaseImgPreview', 'showcaseImageData', 'showcaseImageUrl', 'showcaseImageFile');
+    }
+
+    function editShowcaseItem(category, id) {
+      const list = showcaseStore[category] || [];
+      const item = list.find(row => Number(row.id) === Number(id));
+      if (!item) return;
+      openShowcaseModal(category, item);
+    }
+
+    async function saveShowcaseItem() {
+      const category = document.getElementById('showcaseCategory').value;
+      const editId = Number(document.getElementById('showcaseEditId').value || 0);
+      const title = document.getElementById('showcaseTitle').value.trim();
+      if (!title) {
+        showToast('❌ 标题不能为空');
+        return;
+      }
+
+      const list = (showcaseStore[category] || []).slice();
+      const item = {
+        id: editId || (list.length ? Math.max(...list.map(row => Number(row.id) || 0)) + 1 : 1),
+        title,
+        tag: document.getElementById('showcaseTag').value.trim() || (category === 'honors' ? '荣誉' : '活动'),
+        date: document.getElementById('showcaseDate').value.trim(),
+        icon: document.getElementById('showcaseIcon').value.trim() || (category === 'honors' ? '🏆' : '🤖'),
+        level: document.getElementById('showcaseLevel').value.trim(),
+        content: document.getElementById('showcaseContent').value.trim(),
+        image: document.getElementById('showcaseImageData').value.trim()
+      };
+
+      item.tagColor = category === 'honors'
+        ? 'gold'
+        : (item.tag.includes('重大') ? 'red' : item.tag.includes('荣誉') ? 'gold' : 'blue');
+
+      if (category === 'activities') {
+        item.bg = 'linear-gradient(135deg,#003a99,#165DFF)';
+      }
+
+      if (category === 'members') {
+        item.name = title;
+        item.role = document.getElementById('showcaseTag').value.trim();
+        item.major = document.getElementById('showcaseDate').value.trim();
+        item.avatar = document.getElementById('showcaseIcon').value.trim() || '👤';
+        item.badgeText = document.getElementById('showcaseLevel').value.trim() || '成员';
+        item.badgeColor = item.badgeText.includes('党员') ? 'red' : 'blue';
+        delete item.title;
+        delete item.tag;
+        delete item.date;
+        delete item.icon;
+        delete item.level;
+      }
+
+      const nextList = editId
+        ? list.map(row => (Number(row.id) === editId ? { ...row, ...item } : row))
+        : [item, ...list];
+
+      try {
+        const resp = await apiRequest(`/content/showcase/${category}`, {
+          method: 'PUT',
+          body: JSON.stringify(nextList)
+        });
+        if (resp.success) {
+          showcaseStore[category] = nextList;
+          renderShowcaseTables();
+          closeShowcaseModal();
+          showToast('✅ 社团风采已更新');
+        }
+      } catch (e) {
+        // apiRequest 统一错误提示
+      }
+    }
+
+    async function saveShowcaseIntro() {
+      const about = [
+        document.getElementById('showcaseIntro1').value.trim(),
+        document.getElementById('showcaseIntro2').value.trim(),
+        document.getElementById('showcaseIntro3').value.trim()
+      ].filter(Boolean);
+
+      const payload = {
+        about,
+        stats: {
+          members: parseInt(document.getElementById('showcaseStatMembers').value, 10) || 0,
+          excellentYears: parseInt(document.getElementById('showcaseStatExcellentYears').value, 10) || 0,
+          activities: parseInt(document.getElementById('showcaseStatActivities').value, 10) || 0,
+          honors: parseInt(document.getElementById('showcaseStatHonors').value, 10) || 0
+        }
+      };
+
+      try {
+        const resp = await apiRequest('/content/showcase/intro', {
+          method: 'PUT',
+          body: JSON.stringify(payload)
+        });
+        if (resp.success) {
+          showcaseStore.intro = payload;
+          showToast('✅ 社团简介已更新');
+        }
+      } catch (e) {
+        // apiRequest 统一错误提示
+      }
+    }
+
+    async function deleteShowcaseItem(category, id) {
+      if (!confirm('确定删除该条目吗？')) return;
+      const list = (showcaseStore[category] || []).filter(row => Number(row.id) !== Number(id));
+      try {
+        const resp = await apiRequest(`/content/showcase/${category}`, {
+          method: 'PUT',
+          body: JSON.stringify(list)
+        });
+        if (resp.success) {
+          showcaseStore[category] = list;
+          renderShowcaseTables();
+          showToast('✅ 已删除');
+        }
+      } catch (e) {
+        // apiRequest 统一错误提示
+      }
+    }
+
+    // ============================================================
+    // 轮播图管理
+    // ============================================================
+    async function loadSlidesList() {
+      const tbody = document.getElementById('slidesTableBody');
+      if (!tbody) return;
+      tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;padding:40px;color:var(--text3);">正在加载...</td></tr>';
+      try {
+        const slides = await getSlides();
+        if (!slides.length) { tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;padding:40px;color:var(--text3);">暂无轮播</td></tr>'; return; }
+        tbody.innerHTML = slides.map(s => `<tr>
+          <td>${s.id}</td>
+          <td>${s.tag}</td>
+          <td title="${s.title.replace(/<br>/g,' ')}">${s.title.replace(/<br>/g,' ').substring(0,30)}</td>
+          <td>${s.link}</td>
+          <td>
+            <button class="action-btn act-edit" onclick="editSlide(${s.id})">编辑</button>
+            <button class="action-btn act-del" onclick="delSlide(${s.id})">删除</button>
+          </td>
+        </tr>`).join('');
+      } catch (e) { tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;color:var(--red);">加载失败</td></tr>'; }
+    }
+
+    function openSlideModal(data) {
+      document.getElementById('slideEditId').value = data ? data.id : '';
+      document.getElementById('slideTag').value = data ? data.tag : '';
+      document.getElementById('slideTitle').value = data ? data.title : '';
+      document.getElementById('slideDesc').value = data ? (data.desc || '') : '';
+      document.getElementById('slideLink').value = data ? (data.link || 'party-detail.html') : 'party-detail.html';
+      document.getElementById('slideLinkText').value = data ? (data.linkText || '查看详情 →') : '查看详情 →';
+      document.getElementById('slideBg').value = data ? (data.bg || '') : 'linear-gradient(135deg,#4a0000,#c90000,#165DFF)';
+      document.getElementById('slideImageFile').value = '';
+      setImageField(data && data.bgImage ? data.bgImage : '', 'slideImgPreviewWrap', 'slideImgPreview', 'slideImageData', 'slideImageUrl');
+      document.getElementById('slideModalTitle').textContent = data ? '✏️ 编辑轮播' : '🖼️ 添加轮播';
+      document.getElementById('slideModal').style.display = 'flex';
+    }
+    function closeSlideModal() { document.getElementById('slideModal').style.display = 'none'; }
+
+    async function editSlide(id) {
+      const slides = await getSlides();
+      const item = slides.find(s => s.id === id);
+      if (item) openSlideModal(item);
+    }
+
+    async function saveSlide() {
+      const tag = document.getElementById('slideTag').value.trim();
+      const title = document.getElementById('slideTitle').value.trim();
+      if (!tag || !title) { showToast('❌ 标签和标题不能为空'); return; }
+      const data = {
+        tag, title,
+        desc: document.getElementById('slideDesc').value.trim(),
+        link: document.getElementById('slideLink').value.trim(),
+        linkText: document.getElementById('slideLinkText').value.trim(),
+        bg: document.getElementById('slideBg').value.trim(),
+        bgImage: document.getElementById('slideImageData').value || ''
+      };
+      const editId = document.getElementById('slideEditId').value;
+      try {
+        const res = editId ? await updateSlide(parseInt(editId), data) : await addSlide(data);
+        if (res.success) { showToast('✅ ' + res.message); closeSlideModal(); loadSlidesList(); }
+        else showToast('❌ ' + (res.message || '操作失败'));
+      } catch (e) { showToast('❌ 操作失败'); }
+    }
+
+    async function delSlide(id) {
+      if (!confirm('确定删除该轮播？')) return;
+      try {
+        const res = await deleteSlide(id);
+        if (res.success) { showToast('✅ 已删除'); loadSlidesList(); }
+      } catch (e) { showToast('❌ 删除失败'); }
+    }
+
+    // ============================================================
+    // 统计数据管理
+    // ============================================================
+    function formatAdminDateTime(val) {
+      if (!val) return '-';
+      return String(val).replace('T', ' ').slice(0, 19);
+    }
+
+    async function loadDashboardStats() {
+      try {
+        const stats = await getSiteStats();
+        const partyMembers = Number(stats.partyMembers || 0);
+        const totalUsers = Number(stats.totalUsers || partyMembers || 0);
+        const totalActivities = Number(stats.totalActivities || 0);
+        const pendingMessages = Number(stats.pendingMessages || 0);
+
+        const pendingText = `${pendingMessages}条`;
+        document.getElementById('dashPartyMembers').textContent = String(partyMembers);
+        document.getElementById('dashTotalUsers').textContent = String(totalUsers);
+        document.getElementById('dashActivities').textContent = String(totalActivities);
+        document.getElementById('dashPendingMessages').textContent = String(pendingMessages);
+        document.getElementById('pendingMsgTodoCount').textContent = pendingText;
+        document.getElementById('dashboardUpdatedAt').textContent = `更新于 ${formatAdminDateTime(stats.updatedAt)}`;
+      } catch (e) {
+        document.getElementById('dashboardUpdatedAt').textContent = '更新失败';
+      }
+    }
+
+    async function loadStats() {
+      try {
+        const stats = await getSiteStats();
+        document.getElementById('statBranches').value = stats.partyBranches || 0;
+        document.getElementById('statMembers').value = stats.partyMembers || 0;
+        document.getElementById('statActivities').value = stats.totalActivities || 0;
+        document.getElementById('statRate').value = stats.participationRate || 0;
+        document.getElementById('statsUpdatedAt').textContent = `更新时间：${formatAdminDateTime(stats.updatedAt)}`;
+      } catch (e) { showToast('❌ 加载统计数据失败'); }
+    }
+
+    async function saveStats() {
+      const data = {
+        partyBranches: parseInt(document.getElementById('statBranches').value) || 0,
+        participationRate: parseInt(document.getElementById('statRate').value) || 0
+      };
+      try {
+        const res = await updateSiteStats(data);
+        if (res.success) {
+          showToast('✅ 统计数据已更新');
+          loadStats();
+          loadDashboardStats();
+        }
+        else showToast('❌ 更新失败');
+      } catch (e) { showToast('❌ 更新失败'); }
+    }
+
+    // ============================================================
+    // 管理员认证检查：未登录或非管理员则跳转到登录页
+    // ============================================================
+    document.addEventListener('DOMContentLoaded', async function() {
+      const token = localStorage.getItem('authToken');
+      let authed = false;
+      if (token) {
+        try {
+          const res = await fetch('/api/auth/me', {
+            headers: { 'Authorization': 'Bearer ' + token }
+          });
+          const data = await res.json();
+          if (data.success && data.data.user.role === 'admin') authed = true;
+        } catch {}
+      }
+      if (!authed) {
+        window.location.href = 'login.html';
+        return;
+      }
+
+      const originalSwitchAdminPage = window.switchAdminPage;
+      window.switchAdminPage = function(page, el) {
+        originalSwitchAdminPage(page, el);
+        if (page === 'dashboard') setTimeout(loadDashboardStats, 100);
+        if (page === 'users') setTimeout(loadUserList, 100);
+        if (page === 'questions') setTimeout(loadQuestionsList, 100);
+        if (page === 'contents') {
+          setTimeout(loadNewsList, 100);
+          setTimeout(loadPartyExtraList, 120);
+        }
+        if (page === 'showcase-mgr') setTimeout(loadShowcaseMgr, 100);
+        if (page === 'actmgr') setTimeout(loadActList, 100);
+        if (page === 'slides') setTimeout(loadSlidesList, 100);
+        if (page === 'stats') setTimeout(loadStats, 100);
+        if (page === 'messages-mgr') setTimeout(loadMessageAuditList, 100);
+      };
+
+      if (document.getElementById('admin-questions')?.classList.contains('active')) {
+        setTimeout(loadQuestionsList, 500);
+      }
+      if (document.getElementById('admin-dashboard')?.classList.contains('active')) {
+        setTimeout(loadDashboardStats, 200);
+      }
+    });
+  </script>
+</body>
+</html>
+
+
+
+
+
+
+
