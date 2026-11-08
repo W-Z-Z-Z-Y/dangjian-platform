@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>智汇AI党建平台</title>
+  <link rel="stylesheet" href="styles.css?v=20260427-3">
+</head>
+<body>
+  <!-- Page loader -->
+  <div id="pageLoader" class="page-loader">
+    <div class="loader-content">
+      <div class="loader-spinner"></div>
+      <div class="loader-text">智汇AI党建平台</div>
+    </div>
+  </div>
+
+  <!-- Toast -->
+  <div id="toast"></div>
+
+  <!-- Top Navigation -->
+  <nav id="topnav">
+    <div class="nav-wrap">
+      <div class="nav-logo" onclick="window.location.href='index.html'">
+        <div class="nav-logo-icon">★</div>
+        <div>
+          <div><div class="nav-logo-text">智汇AI党建平台</div></div>
+          <span class="nav-logo-sub"></span>
+        </div>
+      </div>
+      <div class="nav-links">
+        <div class="nav-link active" data-page="home">首 页</div>
+        <div class="nav-link" onclick="window.location.href='party.html'">党建引领</div>
+        <div class="nav-link" onclick="window.location.href='showcase.html'">社团风采</div>
+        <div class="nav-link" onclick="window.location.href='activities.html'">党建活动</div>
+        <div class="nav-link" onclick="window.location.href='study.html'">在线答题</div>
+        <div class="nav-link" onclick="window.location.href='chat.html'">AI党建</div>
+        <div class="nav-link" onclick="window.location.href='message.html'">留言建议</div>
+      </div>
+      <div class="nav-right" id="navRight">
+        <button class="nav-btn" onclick="toggleTheme()" id="themeToggle">🌙 深色</button>
+        <button class="nav-btn nav-btn-login" onclick="window.location.href='login.html'">登 录</button>
+        <button class="nav-btn nav-btn-admin" onclick="window.location.href='admin.html'">后台管理</button>
+      </div>
+      <button class="hamburger" onclick="toggleMobileNav()">
+        <span></span><span></span><span></span>
+      </button>
+    </div>
+  </nav>
+
+  <!-- Mobile Nav -->
+  <div class="mobile-nav" id="mobileNav">
+    <div class="mobile-nav-item" onclick="window.location.href='index.html';toggleMobileNav()">🏠 首页</div>
+    <div class="mobile-nav-item" onclick="window.location.href='party.html';toggleMobileNav()">🚩 党建引领</div>
+    <div class="mobile-nav-item" onclick="window.location.href='showcase.html';toggleMobileNav()">🌟 社团风采</div>
+    <div class="mobile-nav-item" onclick="window.location.href='activities.html';toggleMobileNav()">📅 党建活动</div>
+    <div class="mobile-nav-item" onclick="window.location.href='study.html';toggleMobileNav()">📚 在线答题</div>
+    <div class="mobile-nav-item" onclick="window.location.href='chat.html';toggleMobileNav()">🤖 AI党建</div>
+    <div class="mobile-nav-item" onclick="window.location.href='message.html';toggleMobileNav()">💬 留言建议</div>
+    <div class="mobile-nav-item" onclick="window.location.href='profile.html';toggleMobileNav()">👤 个人中心</div>
+    <div class="mobile-nav-item" onclick="window.location.href='login.html';toggleMobileNav()">🔐 登录</div>
+  </div>
+
+  <!-- Hero Slider -->
+  <div class="hero">
+    <div class="hero-slides" id="heroSlides">
+      <!-- 轮播内容由JS动态加载 -->
+    </div>
+    <div class="hero-arrow hero-arrow-left" onclick="slideHero(-1)">‹</div>
+    <div class="hero-arrow hero-arrow-right" onclick="slideHero(1)">›</div>
+    <div class="hero-dots">
+      <div class="hero-dot active" onclick="goSlide(0)"></div>
+      <div class="hero-dot" onclick="goSlide(1)"></div>
+      <div class="hero-dot" onclick="goSlide(2)"></div>
+    </div>
+  </div>
+
+  <!-- Quick Entries -->
+  <div class="quick-entries">
+    <div class="quick-entries-inner">
+      <a href="activities.html" class="quick-btn"><div class="quick-btn-icon">📅</div><div class="quick-btn-text">党建活动</div></a>
+      <a href="showcase.html" class="quick-btn"><div class="quick-btn-icon">🌟</div><div class="quick-btn-text">社团风采</div></a>
+      <a href="chat.html" class="quick-btn"><div class="quick-btn-icon">🤖</div><div class="quick-btn-text">AI党建</div></a>
+      <a href="quiz.html" class="quick-btn"><div class="quick-btn-icon">✍️</div><div class="quick-btn-text">在线答题</div></a>
+      <a href="message.html" class="quick-btn"><div class="quick-btn-icon">💬</div><div class="quick-btn-text">留言建议</div></a>
+      <a href="profile.html" class="quick-btn"><div class="quick-btn-icon">👤</div><div class="quick-btn-text">个人中心</div></a>
+    </div>
+  </div>
+
+  <!-- News + Oath Section -->
+  <div class="section">
+    <div class="container">
+      <div class="grid-2" style="gap:40px;align-items:start;">
+        <!-- News -->
+        <div>
+          <div class="sec-hd hd-row">
+            <div><div class="sec-tag">PARTY NEWS</div><h2 class="sec-title">党建<span>要闻</span></h2></div>
+            <a href="party.html" class="sec-more">查看全部 →</a>
+          </div>
+          <div class="card" style="padding:8px 24px;">
+            <div class="news-list" id="indexNewsList">
+              <!-- 新闻列表由JS动态加载 -->
+              <div style="text-align:center;padding:30px;color:var(--text2);">加载中...</div>
+            </div>
+          </div>
+        </div>
+        <!-- Oath -->
+        <div>
+          <div class="sec-hd"><div class="sec-tag">OATH</div><h2 class="sec-title">入党<span>誓词</span></h2></div>
+          <div class="oath-box">
+            <span class="oath-star">★</span>
+            <div style="font-size:11px;letter-spacing:5px;color:var(--gold-light);margin-bottom:20px;">中国共产党入党誓词</div>
+            <p class="oath-text">我志愿加入中国共产党，拥护党的纲领，遵守党的章程，履行党员义务，执行党的决定，<em>严守党的纪律，保守党的秘密</em>，对党忠诚，积极工作，为共产主义奋斗终身，随时准备为党和人民牺牲一切，<em>永不叛党</em>。</p>
+            <p style="margin-top:20px;font-size:12px;color:rgba(255,255,255,0.35);letter-spacing:2px;position:relative;">——《中国共产党章程》</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Stats -->
+  <div style="background:#fff;padding:48px 0;border-top:1px solid var(--border);">
+    <div class="container">
+      <div class="grid-4" id="indexStats">
+        <!-- 统计数据由JS动态加载 -->
+        <div class="stat-card"><div class="stat-number">-</div><div class="stat-label">加载中...</div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Recent Activities -->
+  <div class="section">
+    <div class="container">
+      <div class="sec-hd hd-row">
+        <div><div class="sec-tag">ACTIVITIES</div><h2 class="sec-title">近期<span>活动</span></h2></div>
+        <a href="activities.html" class="sec-more">全部活动 →</a>
+      </div>
+      <div class="grid-3" id="indexActivities">
+        <!-- 近期活动由JS动态加载 -->
+        <div style="text-align:center;padding:30px;color:var(--text2);grid-column:1/-1;">加载中...</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Banner -->
+  <div class="banner-strip">
+    <div class="container">
+      <div class="banner-strip-title">不忘初心 · 牢记使命 · 凝心铸魂 · 砥砺奋进</div>
+      <div class="banner-strip-sub">智汇AI社团 · 以AI赋能党建，以党建引领发展</div>
+    </div>
+  </div>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <div class="container">
+      <div class="footer-grid">
+        <div>
+          <div class="footer-brand-title">智汇AI党建平台</div>
+          <div class="footer-brand-desc">以党建为引领，以智汇为纽带，以AI为翼，致力于打造现代化、智能化的党建文化平台，凝心铸魂，砥砺奋进。</div>
+        </div>
+        <div>
+          <div class="footer-col-title">快速导航</div>
+          <a href="index.html" class="footer-link">首页</a>
+          <a href="party.html" class="footer-link">党建引领</a>
+          <a href="showcase.html" class="footer-link">社团风采</a>
+          <a href="activities.html" class="footer-link">党建活动</a>
+        </div>
+        <div>
+          <div class="footer-col-title">功能模块</div>
+          <a href="study.html" class="footer-link">在线答题</a>
+          <a href="chat.html" class="footer-link">AI党建</a>
+          <a href="message.html" class="footer-link">留言建议</a>
+          <a href="profile.html" class="footer-link">个人中心</a>
+        </div>
+        <div>
+          <div class="footer-col-title">联系我们</div>
+          <div class="footer-link">📍 武汉市蔡甸区</div>
+          <div class="footer-link">✉️ contact@example.com</div>
+          <div class="footer-link">💬 微信公众号：人工智能党建</div>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <div class="footer-copy">© 2024 智汇AI党建平台 · All Rights Reserved</div>
+        <div style="font-size:12px;color:rgba(255,255,255,0.3);">★ 不忘初心 · 牢记使命</div>
+      </div>
+    </div>
+  </footer>
+
+  <script src="common.js?v=20260427-10"></script>
+  <script>
+    async function fillMissingHomeSections(renderedState) {
+      const tasks = [];
+
+      if (!renderedState.slides) {
+        tasks.push(
+          getSlides().then((slides) => {
+            if (Array.isArray(slides) && slides.length) {
+              renderSlides(slides, 'heroSlides');
+              renderedState.slides = true;
+            }
+          }).catch(() => {})
+        );
+      }
+
+      if (!renderedState.news) {
+        tasks.push(
+          getNewsList(5, { summary: true }).then((latestNews) => {
+            if (Array.isArray(latestNews) && latestNews.length) {
+              renderNewsList(latestNews, 'indexNewsList');
+              renderedState.news = true;
+              return;
+            }
+
+            document.getElementById('indexNewsList').innerHTML = '<div class="alert alert-info">暂无党建要闻</div>';
+          }).catch(() => {
+            document.getElementById('indexNewsList').innerHTML = '<div class="alert alert-info">党建要闻加载失败，请稍后刷新重试</div>';
+          })
+        );
+      }
+
+      if (!renderedState.stats) {
+        tasks.push(
+          getSiteStats().then((stats) => {
+            if (stats) {
+              renderSiteStats(stats, 'indexStats');
+              renderedState.stats = true;
+            }
+          }).catch(() => {})
+        );
+      }
+
+      if (!renderedState.activities) {
+        tasks.push(
+          getActivities(undefined, 3, { summary: true }).then((activities) => {
+            if (Array.isArray(activities) && activities.length) {
+              renderActivityCards(activities, 'indexActivities');
+              renderedState.activities = true;
+              return;
+            }
+
+            document.getElementById('indexActivities').innerHTML = '<div class="alert alert-info">暂无近期活动</div>';
+          }).catch(() => {
+            document.getElementById('indexActivities').innerHTML = '<div class="alert alert-info">近期活动加载失败，请稍后刷新重试</div>';
+          })
+        );
+      }
+
+      if (tasks.length) {
+        await Promise.allSettled(tasks);
+      }
+    }
+
+    // 首页动态数据加载
+    async function initIndexPage() {
+      const renderedState = {
+        slides: false,
+        news: false,
+        stats: false,
+        activities: false
+      };
+
+      try {
+        // 首访优化：一次请求拉取首页核心数据（已内置缓存与降级回退）
+        const home = await getHomeContent(5, 3);
+        if (home.slides.length) {
+          renderSlides(home.slides, 'heroSlides');
+          renderedState.slides = true;
+        }
+        if (home.news.length) {
+          renderNewsList(home.news, 'indexNewsList');
+          renderedState.news = true;
+        }
+        if (home.stats) {
+          renderSiteStats(home.stats, 'indexStats');
+          renderedState.stats = true;
+        }
+        if (home.activities.length) {
+          renderActivityCards(home.activities, 'indexActivities');
+          renderedState.activities = true;
+        }
+      } catch (e) {
+        showToast('⚠️ 网络较慢，首页内容正在重试加载', 'info');
+      }
+
+      await fillMissingHomeSections(renderedState);
+    }
+
+    // 页面加载后执行
+    document.addEventListener('DOMContentLoaded', function() {
+      initIndexPage();
+      // 自动轮播
+      setInterval(() => slideHero(1), 4500);
+    });
+  </script>
+</body>
+</html>
+
+
+
+
+
+
