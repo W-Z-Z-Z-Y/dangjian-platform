@@ -1,0 +1,28 @@
+{
+  "name": "dangjian-platform",
+  "version": "2.0.0",
+  "description": "党建学习平台：题库、用户、内容管理和可选 AI 问答",
+  "main": "quiz-api/server.js",
+  "scripts": {
+    "start": "node quiz-api/server.js",
+    "init-db": "node scripts/init-db.js",
+    "create-admin": "node scripts/create-admin.js",
+    "check": "node scripts/check.js"
+  },
+  "dependencies": {
+    "cors": "^2.8.5",
+    "dotenv": "^17.4.2",
+    "express": "^4.18.2",
+    "mysql2": "^3.6.5"
+  },
+  "engines": {
+    "node": ">=22"
+  },
+  "keywords": [
+    "党建",
+    "题库",
+    "API",
+    "用户认证",
+    "答题系统"
+  ]
+}
