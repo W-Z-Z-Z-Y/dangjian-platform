@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AI党建助手 - 智汇AI党建平台</title>
+  <link rel="stylesheet" href="styles.css?v=20260427-3">
+</head>
+<body>
+  <!-- Toast -->
+  <div id="toast"></div>
+
+  <!-- Top Navigation -->
+  <nav id="topnav">
+    <div class="nav-wrap">
+      <div class="nav-logo" onclick="window.location.href='index.html'">
+        <div class="nav-logo-icon">★</div>
+        <div>
+          <div class="nav-logo-text">智汇AI党建平台</div>
+        </div>
+      </div>
+      <div class="nav-links">
+        <div class="nav-link" onclick="window.location.href='index.html'">首 页</div>
+        <div class="nav-link" onclick="window.location.href='party.html'">党建引领</div>
+        <div class="nav-link" onclick="window.location.href='showcase.html'">社团风采</div>
+        <div class="nav-link" onclick="window.location.href='activities.html'">党建活动</div>
+        <div class="nav-link" onclick="window.location.href='study.html'">在线答题</div>
+        <div class="nav-link active" onclick="window.location.href='chat.html'">AI党建</div>
+        <div class="nav-link" onclick="window.location.href='message.html'">留言建议</div>
+      </div>
+      <div class="nav-right" id="navRight">
+        <button class="nav-btn" onclick="toggleTheme()" id="themeToggle">🌙 深色</button>
+        <button class="nav-btn nav-btn-login" onclick="window.location.href='login.html'">登 录</button>
+        <button class="nav-btn nav-btn-admin" onclick="window.location.href='admin.html'" style="display:none">后台管理</button>
+      </div>
+      <button class="hamburger" onclick="toggleMobileNav()">
+        <span></span><span></span><span></span>
+      </button>
+    </div>
+  </nav>
+
+  <!-- Chat Layout -->
+  <div class="chat-layout">
+    <!-- Sidebar -->
+    <div class="chat-sidebar">
+      <div class="chat-sidebar-hd">
+        <div class="chat-sidebar-title">🤖 AI党建助手</div>
+        <div class="chat-sidebar-sub">智能问答 · 实时解答党建疑问</div>
+      </div>
+      <div class="chat-presets">
+        <div class="chat-preset-title">💡 常见问题</div>
+        <div class="chat-preset-item" onclick="sendPreset('入党的基本条件是什么？')">入党的基本条件是什么？</div>
+        <div class="chat-preset-item" onclick="sendPreset('党员的八项义务是什么？')">党员的八项义务是什么？</div>
+        <div class="chat-preset-item" onclick="sendPreset('什么是党的民主集中制？')">什么是党的民主集中制？</div>
+        <div class="chat-preset-item" onclick="sendPreset('党的最高领导机构是什么？')">党的最高领导机构是什么？</div>
+        <div class="chat-preset-item" onclick="sendPreset('如何申请成为入党积极分子？')">如何申请成为入党积极分子？</div>
+        <div class="chat-preset-item" onclick="sendPreset('党费应该如何缴纳？')">党费应该如何缴纳？</div>
+        <div class="chat-preset-item" onclick="sendPreset('什么是组织生活会？')">什么是组织生活会？</div>
+        <div class="chat-preset-item" onclick="sendPreset('党的纪律处分有哪些种类？')">党的纪律处分有哪些种类？</div>
+      </div>
+    </div>
+
+    <!-- Main Chat Area -->
+    <div class="chat-main">
+      <div class="chat-header">
+        <div class="chat-header-icon">🤖</div>
+        <div>
+          <div class="chat-header-title">AI党建助手</div>
+          <div class="chat-header-sub">在线 · 随时解答您的党建疑问</div>
+        </div>
+      </div>
+      <div class="chat-messages" id="chatMessages">
+        <div class="chat-msg chat-msg-ai">
+          <div class="chat-avatar chat-avatar-ai">🤖</div>
+          <div class="chat-bubble chat-bubble-ai">您好！我是AI党建助手，专注于解答党建相关问题。您可以问我关于入党条件、党章党规、党史知识、组织生活等方面的问题。请问有什么可以帮助您的？</div>
+        </div>
+      </div>
+      <div class="chat-input-area">
+        <div class="chat-input-wrap">
+          <textarea class="chat-input" id="chatInput" placeholder="请输入您的问题，例如：入党的基本条件是什么？" rows="1" onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();sendChatMsg();}"></textarea>
+          <button class="chat-send-btn" onclick="sendChatMsg()">➤</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="common.js?v=20260427-10"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      updateNavigation();
+    });
+
+    const chatKB = {
+      '入党': '加入中国共产党，需满足以下基本条件：\n① 年满18周岁的中国工人、农民、军人、知识分子和其他社会阶层的先进分子\n② 承认党的纲领和章程\n③ 愿意参加党的一个组织并在其中积极工作\n④ 执行党的决议\n⑤ 按时缴纳党费',
+      '义务': '党员的八项义务：\n① 认真学习马克思列宁主义、毛泽东思想等\n② 贯彻执行党的基本路线和各项方针政策\n③ 坚持党和人民的利益高于一切\n④ 自觉遵守党的纪律\n⑤ 维护党的团结和统一\n⑥ 密切联系群众\n⑦ 发扬社会主义新风尚\n⑧ 切实开展批评和自我批评',
+      '民主集中制': '民主集中制是党的根本组织制度和领导制度，其基本原则是：\n① 个人服从组织\n② 少数服从多数\n③ 下级服从上级\n④ 全党服从中央',
+      '最高领导机构': '党的最高领导机关，是党的全国代表大会和它所产生的中央委员会。在全国代表大会闭会期间，中央委员会领导党的全部工作。',
+      '积极分子': '申请成为入党积极分子的步骤：\n① 向所在党支部书面提交入党申请书\n② 党支部指定1-2名正式党员作为培养联系人\n③ 经支部大会讨论通过，确定为入党积极分子\n④ 参加党组织安排的教育培训（不少于一年）',
+      '党费': '党费缴纳规定：\n• 3000元以下：0.5%\n• 3000-5000元：1%\n• 5000-10000元：1.5%\n• 10000元以上：2%\n• 学生党员：每月1元',
+      '组织生活': '党的组织生活主要形式：\n① 党员大会（支部大会）\n② 党支部委员会会议\n③ 党小组会议\n④ 党员领导干部民主生活会\n⑤ 批评和自我批评',
+      '纪律': '党的纪律处分有5种：\n① 警告\n② 严重警告\n③ 撤销党内职务\n④ 留党察看\n⑤ 开除党籍'
+    };
+
+    async function sendChatMsg() {
+      const input = document.getElementById('chatInput');
+      const msg = input.value.trim();
+      if (!msg) return;
+      
+      addMessage(msg, 'user');
+      input.value = '';
+
+      const loadingMessage = addMessage('AI党建助手正在全力帮您全网搜索答案', 'ai');
+
+      try {
+        const response = await fetchChatReply(msg);
+        updateMessage(loadingMessage, response);
+      } catch (error) {
+        console.error('AI党建助手接口调用失败，已切换到本地知识库:', error);
+        const fallbackResponse = getLocalAIResponse(msg);
+        updateMessage(loadingMessage, `${fallbackResponse}\n\n提示：当前显示的是本地兜底回答。`);
+      }
+    }
+
+    function sendPreset(msg) {
+      document.getElementById('chatInput').value = msg;
+      sendChatMsg();
+    }
+
+    function addMessage(content, type) {
+      const container = document.getElementById('chatMessages');
+      const msg = document.createElement('div');
+      msg.className = `chat-msg chat-msg-${type}`;
+      
+      const avatar = type === 'ai' ? '🤖' : '👤';
+      const bubbleClass = type === 'ai' ? 'chat-bubble-ai' : 'chat-bubble-user';
+      
+      msg.innerHTML = `
+        <div class="chat-avatar chat-avatar-${type}">${avatar}</div>
+        <div class="chat-bubble ${bubbleClass}">${content.replace(/\n/g, '<br>')}</div>
+      `;
+      
+      container.appendChild(msg);
+      container.scrollTop = container.scrollHeight;
+      return msg;
+    }
+
+    function updateMessage(messageElement, content) {
+      const bubble = messageElement.querySelector('.chat-bubble');
+      if (bubble) {
+        bubble.innerHTML = content.replace(/\n/g, '<br>');
+      }
+
+      const container = document.getElementById('chatMessages');
+      container.scrollTop = container.scrollHeight;
+    }
+
+    async function fetchChatReply(msg) {
+      const result = await apiRequest('/chat', {
+        method: 'POST',
+        body: JSON.stringify({
+          message: msg,
+          history: []
+        })
+      });
+
+      return result?.data?.reply || '抱歉，AI党建助手暂时没有返回内容。';
+    }
+
+    function getLocalAIResponse(msg) {
+      for (const [key, value] of Object.entries(chatKB)) {
+        if (msg.includes(key)) return value;
+      }
+      return '抱歉，我暂时无法回答这个问题。您可以尝试询问：\n• 入党条件\n• 党员义务\n• 民主集中制\n• 入党积极分子\n• 党费缴纳\n• 组织生活会\n• 党的纪律处分\n\n如果您需要更详细的解答，请联系党支部工作人员。';
+    }
+  </script>
+</body>
+</html>
+
+
+
+
+
+
+
