@@ -1,0 +1,587 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>在线答题 - 智汇AI党建平台</title>
+  <link rel="stylesheet" href="styles.css?v=20260427-3">
+</head>
+<body>
+  <!-- Page loader -->
+  <div id="pageLoader" class="page-loader">
+    <div class="loader-content">
+      <div class="loader-spinner"></div>
+      <div class="loader-text">智汇AI党建平台</div>
+    </div>
+  </div>
+
+  <!-- Toast -->
+  <div id="toast"></div>
+
+  <!-- Top Navigation -->
+  <nav id="topnav">
+    <div class="nav-wrap">
+      <div class="nav-logo" onclick="window.location.href='index.html'">
+        <div class="nav-logo-icon">★</div>
+        <div><div class="nav-logo-text">智汇AI党建平台</div></div>
+      </div>
+      <div class="nav-links">
+        <div class="nav-link" onclick="window.location.href='index.html'">首 页</div>
+        <div class="nav-link" onclick="window.location.href='party.html'">党建引领</div>
+        <div class="nav-link" onclick="window.location.href='showcase.html'">社团风采</div>
+        <div class="nav-link" onclick="window.location.href='activities.html'">党建活动</div>
+        <div class="nav-link active" onclick="window.location.href='study.html'">在线答题</div>
+        <div class="nav-link" onclick="window.location.href='chat.html'">AI党建</div>
+        <div class="nav-link" onclick="window.location.href='message.html'">留言建议</div>
+      </div>
+      <div class="nav-right" id="navRight">
+        <button class="nav-btn" onclick="toggleTheme()">🌙 深色</button>
+        <button class="nav-btn nav-btn-login" onclick="window.location.href='login.html'">登 录</button>
+        <button class="nav-btn nav-btn-admin" onclick="window.location.href='admin.html'" style="display:none">后台管理</button>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Hero Banner -->
+  <div style="background:linear-gradient(120deg,var(--blue-dark),var(--blue));padding:40px 0;color:#fff;">
+    <div class="container">
+      <div class="sec-tag" style="color:rgba(255,255,255,0.7);">STUDY CENTER</div>
+      <h1 style="font-size:32px;font-weight:900;margin-top:6px;">在线答题</h1>
+    </div>
+  </div>
+
+  <!-- Study Nav -->
+  <div class="party-nav">
+    <div class="container">
+      <div class="party-nav-inner" id="studyNavInner">
+        <div class="party-nav-item active" style="color:var(--blue);border-bottom-color:var(--blue);" onclick="switchStudyTab('quiz',this)">在线答题</div>
+        <div class="party-nav-item" onclick="switchStudyTab('rank',this)">学习排行</div>
+        <div class="party-nav-item" onclick="switchStudyTab('wrong',this)">错题本</div>
+        <div class="party-nav-item" onclick="switchStudyTab('records',this)">学习记录</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="container">
+      <!-- Quiz -->
+      <div id="utab-quiz">
+        <div class="card" style="padding:36px;text-align:center;max-width:600px;margin:0 auto;">
+          <div style="font-size:64px;margin-bottom:20px;">✍️</div>
+          <h2 style="font-size:24px;font-weight:700;margin-bottom:12px;">党建知识测验</h2>
+          <p style="font-size:14px;color:var(--text3);margin-bottom:24px;line-height:1.8;">共 10 题 · 单选题 · 完成后可获得学习积分<br>测试内容涵盖党章党规、党史知识、时事政治</p>
+          <div style="display:flex;gap:16px;justify-content:center;flex-wrap:wrap;">
+            <a href="quiz.html" class="btn btn-red">🚀 开始答题</a>
+            <button class="btn btn-outline-blue" onclick="switchStudyTab('rank', this)">🏆 查看排行</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Rank -->
+      <div id="utab-rank" style="display:none;">
+        <div class="card" style="padding:0;">
+          <div style="padding:20px 24px;background:linear-gradient(90deg,var(--red-dark),var(--red));color:#fff;display:flex;align-items:center;gap:12px;">
+            <span style="font-size:24px;">🏆</span>
+            <div><div style="font-weight:700;">学习积分排行榜</div><div style="font-size:12px;opacity:0.7;">实时更新 · 基于答题成绩</div></div>
+            <div style="margin-left:auto;display:flex;gap:8px;align-items:center;">
+              <button class="btn btn-outline btn-sm" style="color:#fff;border-color:rgba(255,255,255,0.3);" onclick="changeRankPeriod('all', this)">全部</button>
+              <button class="btn btn-outline btn-sm" style="color:#fff;border-color:rgba(255,255,255,0.3);" onclick="changeRankPeriod('week', this)">本周</button>
+              <button class="btn btn-outline btn-sm" style="color:#fff;border-color:rgba(255,255,255,0.3);" onclick="changeRankPeriod('month', this)">本月</button>
+              <button class="btn btn-outline btn-sm" style="color:#fff;border-color:rgba(255,255,255,0.3);" onclick="loadRankData(currentRankPeriod)" title="刷新数据">🔄</button>
+            </div>
+          </div>
+          <div class="table-wrap">
+            <table>
+              <thead><tr><th>排名</th><th>姓名</th><th>最高分</th><th>答题次数</th><th>平均分</th><th>答对数</th></tr></thead>
+              <tbody>
+                <tr><td colspan="6" style="text-align:center;padding:40px;">
+                  <div style="font-size:32px;margin-bottom:12px;">⏳</div>
+                  <div>正在加载排行榜数据...</div>
+                </td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- Wrong Notebook -->
+      <div id="utab-wrong" style="display:none;">
+        <div class="card" style="padding:0;overflow:hidden;">
+          <div style="padding:20px 24px;background:linear-gradient(90deg,#7a1b1b,var(--red));color:#fff;display:flex;align-items:center;gap:12px;flex-wrap:wrap;">
+            <span style="font-size:24px;">📘</span>
+            <div>
+              <div style="font-weight:700;">我的错题本</div>
+              <div style="font-size:12px;opacity:0.8;">自动记录答题过程中的错题</div>
+            </div>
+            <div id="wrongNotebookStats" style="margin-left:auto;font-size:12px;opacity:0.9;">暂无数据</div>
+            <button class="btn btn-outline btn-sm" style="color:#fff;border-color:rgba(255,255,255,0.3);" onclick="loadWrongNotebookData()" title="刷新数据">🔄</button>
+          </div>
+          <div id="wrongNotebookList" style="padding:24px;display:grid;gap:16px;">
+            <div style="text-align:center;padding:24px;color:var(--text3);">请切换到错题本后加载数据</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Records -->
+      <div id="utab-records" style="display:none;">
+        <div class="card" style="padding:0;">
+          <div style="padding:20px 24px;background:linear-gradient(90deg,var(--blue-dark),var(--blue));color:#fff;display:flex;align-items:center;gap:12px;">
+            <span style="font-size:24px;">📚</span>
+            <div><div style="font-weight:700;">学习记录</div><div style="font-size:12px;opacity:0.7;">答题记录 · 自动保存</div></div>
+            <div style="margin-left:auto;">
+              <button class="btn btn-outline btn-sm" style="color:#fff;border-color:rgba(255,255,255,0.3);" onclick="loadRecordsData()" title="刷新数据">🔄</button>
+            </div>
+          </div>
+          <div class="table-wrap">
+            <table>
+              <thead><tr><th>测验内容</th><th>类型</th><th>成绩/进度</th><th>答题时间</th><th>得分</th></tr></thead>
+              <tbody>
+                <tr><td colspan="5" style="text-align:center;padding:40px;">
+                  <div style="font-size:32px;margin-bottom:12px;">⏳</div>
+                  <div>正在加载学习记录...</div>
+                </td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <div class="container">
+      <div class="footer-grid">
+        <div>
+          <div class="footer-brand-title">智汇AI党建平台</div>
+          <div class="footer-brand-desc">以党建为引领，以智汇为纽带，以AI为翼。</div>
+        </div>
+        <div>
+          <div class="footer-col-title">快速导航</div>
+          <a href="index.html" class="footer-link">首页</a>
+          <a href="party.html" class="footer-link">党建引领</a>
+          <a href="showcase.html" class="footer-link">社团风采</a>
+        </div>
+        <div>
+          <div class="footer-col-title">功能模块</div>
+          <a href="study.html" class="footer-link">在线答题</a>
+          <a href="chat.html" class="footer-link">AI党建</a>
+          <a href="message.html" class="footer-link">留言建议</a>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <div class="footer-copy">© 2024 智汇AI党建平台</div>
+      </div>
+    </div>
+  </footer>
+
+  <script src="common-enhanced.js?v=20260427-15"></script>
+  <script>
+    // 加载排行榜数据
+    let currentRankPeriod = 'all';
+    let wrongNotebookQuestions = [];
+    let wrongNotebookPracticeState = {};
+
+    function escapeHtml(value) {
+      return String(value ?? '')
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#39;');
+    }
+
+    function normalizeNotebookAnswer(value) {
+      if (Array.isArray(value)) {
+        return value.slice().map(Number).sort((a, b) => a - b);
+      }
+      const num = Number(value);
+      return Number.isInteger(num) ? num : null;
+    }
+
+    function getWrongOptionPrefix(type, index) {
+      if (type === 'judgment') return index === 0 ? '√' : '×';
+      return String.fromCharCode(65 + index);
+    }
+
+    function arraysEqual(left, right) {
+      if (!Array.isArray(left) || !Array.isArray(right) || left.length !== right.length) return false;
+      return left.every((item, index) => item === right[index]);
+    }
+
+    function renderWrongNotebookList() {
+      const list = document.getElementById('wrongNotebookList');
+      if (!list) return;
+
+      if (!wrongNotebookQuestions.length) {
+        list.innerHTML = '<div style="text-align:center;padding:32px;color:var(--text3);"><div style="font-size:32px;margin-bottom:12px;">✅</div><div>当前没有错题记录</div></div>';
+        return;
+      }
+
+      list.innerHTML = wrongNotebookQuestions.map((item, index) => {
+        const options = Array.isArray(item.options) ? item.options : [];
+        const state = wrongNotebookPracticeState[item.question_key] || { open: false, selected: [], checked: false, correct: false };
+        const optionsHtml = options.length
+          ? `<div style="display:grid;gap:8px;margin-top:14px;">${options.map((option, optionIndex) => `<div style="padding:10px 12px;border:1px solid var(--border);border-radius:10px;background:${String(item.correct_answer_text || '').includes(option) ? 'var(--red-bg)' : 'var(--bg)'};">${getWrongOptionPrefix(item.type, optionIndex)}. ${escapeHtml(option)}</div>`).join('')}</div>`
+          : '';
+        const wrongDate = item.last_wrong_at ? new Date(item.last_wrong_at).toLocaleString() : '-';
+        const practicePanel = state.open
+          ? `<div style="margin-top:16px;padding:16px;border:1px dashed var(--border);border-radius:12px;background:var(--bg);">
+              <div style="font-weight:700;margin-bottom:12px;">重做此题</div>
+              <div style="display:grid;gap:8px;">${options.map((option, optionIndex) => {
+                const selected = Array.isArray(state.selected) && state.selected.includes(optionIndex);
+                return `<button class="btn ${selected ? 'btn-blue' : 'btn-outline'} btn-sm" onclick="toggleWrongPracticeOption('${escapeHtml(item.question_key)}', ${optionIndex})" style="justify-content:flex-start;">${getWrongOptionPrefix(item.type, optionIndex)}. ${escapeHtml(option)}</button>`;
+              }).join('')}</div>
+              <div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:14px;">
+                <button class="btn btn-red btn-sm" onclick="submitWrongPractice('${escapeHtml(item.question_key)}')">提交答案</button>
+                <button class="btn btn-outline btn-sm" onclick="closeWrongPractice('${escapeHtml(item.question_key)}')">收起</button>
+              </div>
+              ${state.checked ? `<div style="margin-top:12px;padding:12px 14px;border-radius:10px;background:${state.correct ? 'rgba(0,180,90,0.08)' : 'var(--red-bg)'};color:var(--text);">${state.correct ? '回答正确，这道题你已经掌握了。' : `回答不正确。正确答案：${escapeHtml(item.correct_answer_text || '未记录')}`}</div>` : ''}
+            </div>`
+          : '';
+
+        return `
+          <div class="card" style="padding:20px;border:1px solid var(--border);box-shadow:none;">
+            <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:12px;flex-wrap:wrap;">
+              <div style="font-weight:700;line-height:1.8;">${index + 1}. ${escapeHtml(item.question || '未命名题目')}</div>
+              <span class="badge badge-red">错 ${item.wrong_count || 1} 次</span>
+            </div>
+            <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:12px;">
+              <span class="badge badge-blue">${item.type === 'multiple' ? '多选题' : item.type === 'judgment' ? '判断题' : '单选题'}</span>
+              <span class="badge badge-gold">最近出错：${wrongDate}</span>
+            </div>
+            ${optionsHtml}
+            <div style="margin-top:14px;padding:12px 14px;border-radius:10px;background:var(--red-bg);color:var(--text);">
+              <div style="margin-bottom:6px;"><strong>正确答案：</strong>${escapeHtml(item.correct_answer_text || '未记录')}</div>
+              <div><strong>你的答案：</strong>${escapeHtml(item.user_answer_text || '未作答')}</div>
+            </div>
+            <div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:14px;">
+              <button class="btn btn-outline-blue btn-sm" onclick="startWrongPractice('${escapeHtml(item.question_key)}')">重做此题</button>
+              <button class="btn btn-outline btn-sm" onclick="removeWrongQuestion('${escapeHtml(item.question_key)}')">移出错题本</button>
+            </div>
+            ${practicePanel}
+          </div>
+        `;
+      }).join('');
+    }
+
+    function startWrongPractice(questionKey) {
+      const current = wrongNotebookPracticeState[questionKey] || { selected: [] };
+      wrongNotebookPracticeState[questionKey] = { ...current, open: true, selected: [], checked: false, correct: false };
+      renderWrongNotebookList();
+    }
+
+    function closeWrongPractice(questionKey) {
+      const current = wrongNotebookPracticeState[questionKey] || { selected: [] };
+      wrongNotebookPracticeState[questionKey] = { ...current, open: false, selected: [], checked: false, correct: false };
+      renderWrongNotebookList();
+    }
+
+    function toggleWrongPracticeOption(questionKey, optionIndex) {
+      const item = wrongNotebookQuestions.find(question => String(question.question_key) === String(questionKey));
+      if (!item) return;
+
+      const current = wrongNotebookPracticeState[questionKey] || { open: true, selected: [], checked: false, correct: false };
+      let selected = Array.isArray(current.selected) ? current.selected.slice() : [];
+
+      if (item.type === 'multiple') {
+        selected = selected.includes(optionIndex)
+          ? selected.filter(index => index !== optionIndex)
+          : selected.concat(optionIndex).sort((a, b) => a - b);
+      } else {
+        selected = [optionIndex];
+      }
+
+      wrongNotebookPracticeState[questionKey] = { ...current, open: true, selected, checked: false, correct: false };
+      renderWrongNotebookList();
+    }
+
+    function submitWrongPractice(questionKey) {
+      const item = wrongNotebookQuestions.find(question => String(question.question_key) === String(questionKey));
+      if (!item) return;
+
+      const current = wrongNotebookPracticeState[questionKey] || { open: true, selected: [] };
+      const selected = Array.isArray(current.selected) ? current.selected.slice().sort((a, b) => a - b) : [];
+      if (!selected.length) {
+        showToast('❌ 请先选择答案', 'error');
+        return;
+      }
+
+      const correctAnswer = normalizeNotebookAnswer(item.correct_answer);
+      const isCorrect = Array.isArray(correctAnswer)
+        ? arraysEqual(selected, correctAnswer)
+        : selected[0] === correctAnswer;
+
+      wrongNotebookPracticeState[questionKey] = { ...current, open: true, selected, checked: true, correct: isCorrect };
+      renderWrongNotebookList();
+      showToast(isCorrect ? '✅ 回答正确' : '❌ 回答错误', isCorrect ? 'success' : 'error');
+    }
+
+    async function removeWrongQuestion(questionKey) {
+      if (!questionKey) return;
+      if (!confirm('确定将这道题移出错题本吗？')) return;
+
+      const success = await removeWrongNotebookQuestion(questionKey);
+      if (!success) {
+        showToast('❌ 移出错题本失败', 'error');
+        return;
+      }
+
+      wrongNotebookQuestions = wrongNotebookQuestions.filter(item => String(item.question_key) !== String(questionKey));
+      delete wrongNotebookPracticeState[questionKey];
+      renderWrongNotebookList();
+      const stats = document.getElementById('wrongNotebookStats');
+      if (stats) {
+        const totalAttempts = wrongNotebookQuestions.reduce((sum, item) => sum + Number(item.wrong_count || 0), 0);
+        stats.textContent = `共 ${wrongNotebookQuestions.length} 题，累计错了 ${totalAttempts} 次`;
+      }
+      showToast('✅ 已移出错题本');
+    }
+
+    function isImageAvatarValue(value) {
+      if (typeof value !== 'string') return false;
+      const normalized = value.trim();
+      if (!normalized) return false;
+      return /^(https?:\/\/|data:image\/|\/)/i.test(normalized);
+    }
+
+    function buildRankAvatar(item) {
+      const rawAvatar = typeof item.avatar === 'string' ? item.avatar.trim() : '';
+      if (isImageAvatarValue(rawAvatar)) {
+        return `<img src="${rawAvatar}" alt="${item.name || item.username || '用户'}头像" style="width:24px;height:24px;border-radius:50%;margin-right:8px;vertical-align:middle;object-fit:cover;">`;
+      }
+
+      const displayName = String(item.name || item.username || '用户').trim();
+      const firstChar = displayName ? displayName.charAt(0) : '用';
+      return `<span style="display:inline-flex;align-items:center;justify-content:center;width:24px;height:24px;border-radius:50%;margin-right:8px;vertical-align:middle;background:linear-gradient(135deg,var(--red-dark),var(--red));color:#fff;font-size:12px;font-weight:700;">${firstChar}</span>`;
+    }
+
+    async function loadRankData(period = currentRankPeriod) {
+      const rankContainer = document.getElementById('utab-rank');
+      if (!rankContainer || rankContainer.style.display === 'none') return;
+
+      try {
+        // 更新当前时间段
+        currentRankPeriod = period;
+
+        // 更新按钮状态
+        document.querySelectorAll('#utab-rank .btn-outline').forEach(btn => {
+          btn.style.background = 'transparent';
+          btn.style.color = '#fff';
+        });
+        const activeBtn = document.querySelector(`#utab-rank button[onclick*="'${period}'"]`);
+        if (activeBtn) {
+          activeBtn.style.background = 'rgba(255,255,255,0.2)';
+          activeBtn.style.color = '#fff';
+        }
+
+        // 显示加载状态
+        const tbody = rankContainer.querySelector('tbody');
+        if (tbody) tbody.innerHTML = `
+          <tr><td colspan="6" style="text-align:center;padding:40px;">
+            <div style="font-size:32px;margin-bottom:12px;">⏳</div>
+            <div>正在加载排行榜数据...</div>
+          </td></tr>`;
+
+        // 获取排行榜数据
+        const leaderboard = await getQuizLeaderboard(10, period);
+
+        // 渲染数据
+        if (leaderboard && leaderboard.length > 0) {
+          const rows = leaderboard.map((item, index) => {
+            const rankIcon = index === 0 ? '🥇' : index === 1 ? '🥈' : index === 2 ? '🥉' : index + 1;
+            const highestScore = item.highest_score || 0;
+            const attempts = item.attempts || 0;
+            const avgScore = Math.round(item.average_score || 0);
+            const totalCorrect = item.total_correct || 0;
+            const username = item.name || item.username || '用户';
+            const avatar = buildRankAvatar(item);
+
+            return `
+              <tr>
+                <td><span style="font-size:${index < 3 ? '20px' : '16px'};">${rankIcon}</span></td>
+                <td><strong>${avatar} ${username}</strong></td>
+                <td style="color:var(--red);font-weight:700;">${highestScore}</td>
+                <td>${attempts}次</td>
+                <td>${avgScore}</td>
+                <td>${totalCorrect}</td>
+              </tr>
+            `;
+          }).join('');
+
+          if (tbody) tbody.innerHTML = rows;
+        } else {
+          if (tbody) tbody.innerHTML = `
+            <tr><td colspan="6" style="text-align:center;padding:40px;">
+              <div style="font-size:32px;margin-bottom:12px;">📊</div>
+              <div>暂无排行榜数据</div>
+            </td></tr>`;
+        }
+      } catch (error) {
+        console.error('加载排行榜失败:', error);
+        const tbody = rankContainer.querySelector('tbody');
+        if (tbody) tbody.innerHTML = `
+          <tr><td colspan="6" style="text-align:center;padding:40px;">
+            <div style="font-size:32px;margin-bottom:12px;">❌</div>
+            <div>加载失败: ${error.message || '未知错误'}</div>
+          </td></tr>`;
+      }
+    }
+
+    // 切换排行榜时间段
+    function changeRankPeriod(period, button) {
+      loadRankData(period);
+    }
+
+    // 加载学习记录数据
+    async function loadRecordsData() {
+      const recordsContainer = document.getElementById('utab-records');
+      if (!recordsContainer || recordsContainer.style.display === 'none') return;
+
+      try {
+        // 显示加载状态
+        const tbody = recordsContainer.querySelector('tbody');
+        if (tbody) tbody.innerHTML = `
+          <tr><td colspan="5" style="text-align:center;padding:40px;">
+            <div style="font-size:32px;margin-bottom:12px;">⏳</div>
+            <div>正在加载学习记录...</div>
+          </td></tr>`;
+
+        // 获取答题记录数据
+        const isLoggedIn = localStorage.getItem('userLoggedIn') === 'true';
+        if (!isLoggedIn) {
+          if (tbody) tbody.innerHTML = `
+            <tr><td colspan="5" style="text-align:center;padding:40px;">
+              <div style="font-size:32px;margin-bottom:12px;">🔒</div>
+              <div>请先登录查看学习记录</div>
+            </td></tr>`;
+          return;
+        }
+
+        const recordsData = await getUserQuizRecords(20, 0);
+        const records = recordsData.records || [];
+
+        // 渲染数据
+        if (records.length > 0) {
+          const rows = records.map(record => {
+            const date = new Date(record.created_at).toLocaleDateString();
+            const total = record.total_questions || 0;
+            const correct = record.correct_answers || 0;
+            const score = record.score || 0;
+            const timeSpent = record.time_spent ? `${Math.floor(record.time_spent / 60)}分${record.time_spent % 60}秒` : '-';
+            const accuracy = total > 0 ? Math.round((correct / total) * 100) : 0;
+            const startTime = record.start_time ? new Date(record.start_time).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}) : '';
+
+            return `
+              <tr>
+                <td>党建知识测验 (${total}题)</td>
+                <td><span class="badge badge-gold">答题</span></td>
+                <td>${correct}/${total} (${accuracy}%)<br><small>耗时: ${timeSpent}</small></td>
+                <td>${date} ${startTime}</td>
+                <td style="color:var(--red);font-weight:700;">${score}</td>
+              </tr>
+            `;
+          }).join('');
+
+          if (tbody) tbody.innerHTML = rows;
+        } else {
+          if (tbody) tbody.innerHTML = `
+            <tr><td colspan="5" style="text-align:center;padding:40px;">
+              <div style="font-size:32px;margin-bottom:12px;">📝</div>
+              <div>暂无学习记录</div>
+            </td></tr>`;
+        }
+      } catch (error) {
+        console.error('加载学习记录失败:', error);
+        const tbody = recordsContainer.querySelector('tbody');
+        if (tbody) tbody.innerHTML = `
+          <tr><td colspan="5" style="text-align:center;padding:40px;">
+            <div style="font-size:32px;margin-bottom:12px;">❌</div>
+            <div>加载失败: ${error.message || '未知错误'}</div>
+          </td></tr>`;
+      }
+    }
+
+    async function loadWrongNotebookData() {
+      const wrongContainer = document.getElementById('utab-wrong');
+      if (!wrongContainer || wrongContainer.style.display === 'none') return;
+
+      const list = document.getElementById('wrongNotebookList');
+      const stats = document.getElementById('wrongNotebookStats');
+
+      try {
+        if (list) list.innerHTML = '<div style="text-align:center;padding:32px;color:var(--text3);"><div style="font-size:32px;margin-bottom:12px;">⏳</div><div>正在加载错题本...</div></div>';
+        if (stats) stats.textContent = '加载中...';
+
+        const isLoggedIn = localStorage.getItem('userLoggedIn') === 'true';
+        if (!isLoggedIn) {
+          if (list) list.innerHTML = '<div style="text-align:center;padding:32px;color:var(--text3);"><div style="font-size:32px;margin-bottom:12px;">🔒</div><div>请先登录查看错题本</div></div>';
+          if (stats) stats.textContent = '未登录';
+          return;
+        }
+
+        const wrongData = await getUserWrongNotebook(50);
+        const questions = wrongData.questions || [];
+        const wrongStats = wrongData.stats || {};
+        wrongNotebookQuestions = questions;
+        wrongNotebookPracticeState = {};
+
+        if (stats) {
+          stats.textContent = `共 ${wrongStats.total_wrong_questions || 0} 题，累计错了 ${wrongStats.total_wrong_attempts || 0} 次`;
+        }
+        renderWrongNotebookList();
+      } catch (error) {
+        console.error('加载错题本失败:', error);
+        if (list) list.innerHTML = `<div style="text-align:center;padding:32px;color:var(--text3);"><div style="font-size:32px;margin-bottom:12px;">❌</div><div>加载失败: ${error.message || '未知错误'}</div></div>`;
+        if (stats) stats.textContent = '加载失败';
+      }
+    }
+
+    // 修改标签切换函数以加载数据
+    const originalSwitchStudyTab = window.switchStudyTab;
+    window.switchStudyTab = function(tab, el) {
+      // 调用原始函数
+      if (originalSwitchStudyTab) originalSwitchStudyTab(tab, el);
+
+      // 根据标签页加载数据
+      setTimeout(() => {
+        if (tab === 'rank') {
+          loadRankData();
+        } else if (tab === 'wrong') {
+          loadWrongNotebookData();
+        } else if (tab === 'records') {
+          loadRecordsData();
+        }
+      }, 100);
+    };
+
+    // 页面加载时检查当前标签页并加载数据
+    document.addEventListener('DOMContentLoaded', async function() {
+      // 等待导航栏更新
+      if (typeof updateNavigation === 'function') {
+        updateNavigation();
+      }
+
+      // 检查当前是否在排行榜或记录标签页
+      const rankTab = document.getElementById('utab-rank');
+      const wrongTab = document.getElementById('utab-wrong');
+      const recordsTab = document.getElementById('utab-records');
+
+      if (rankTab && rankTab.style.display !== 'none') {
+        loadRankData();
+      } else if (wrongTab && wrongTab.style.display !== 'none') {
+        loadWrongNotebookData();
+      } else if (recordsTab && recordsTab.style.display !== 'none') {
+        loadRecordsData();
+      }
+    });
+  </script>
+</body>
+</html>
+
+
+
+
+
+
+
