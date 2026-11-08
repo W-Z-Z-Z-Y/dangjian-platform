@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>党建活动 - 智汇AI党建平台</title>
+  <link rel="stylesheet" href="styles.css?v=20260427-3">
+</head>
+<body>
+  <!-- Page loader -->
+  <div id="pageLoader" class="page-loader">
+    <div class="loader-content">
+      <div class="loader-spinner"></div>
+      <div class="loader-text">智汇AI党建平台</div>
+    </div>
+  </div>
+
+  <!-- Toast -->
+  <div id="toast"></div>
+
+  <!-- Top Navigation -->
+  <nav id="topnav">
+    <div class="nav-wrap">
+      <div class="nav-logo" onclick="window.location.href='index.html'">
+        <div class="nav-logo-icon">★</div>
+        <div><div class="nav-logo-text">智汇AI党建平台</div></div>
+      </div>
+      <div class="nav-links">
+        <div class="nav-link" onclick="window.location.href='index.html'">首 页</div>
+        <div class="nav-link" onclick="window.location.href='party.html'">党建引领</div>
+        <div class="nav-link" onclick="window.location.href='showcase.html'">社团风采</div>
+        <div class="nav-link active" onclick="window.location.href='activities.html'">党建活动</div>
+        <div class="nav-link" onclick="window.location.href='study.html'">在线答题</div>
+        <div class="nav-link" onclick="window.location.href='chat.html'">AI党建</div>
+        <div class="nav-link" onclick="window.location.href='message.html'">留言建议</div>
+      </div>
+      <div class="nav-right" id="navRight">
+        <button class="nav-btn" onclick="toggleTheme()">🌙 深色</button>
+        <button class="nav-btn nav-btn-login" onclick="window.location.href='login.html'">登 录</button>
+        <button class="nav-btn nav-btn-admin" onclick="window.location.href='admin.html'" style="display:none">后台管理</button>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Hero Banner -->
+  <div style="background:linear-gradient(120deg,var(--red-dark),var(--red));padding:40px 0;color:#fff;">
+    <div class="container">
+      <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:16px;">
+        <div>
+          <div class="sec-tag" style="color:rgba(255,255,255,0.7);">ACTIVITIES</div>
+          <h1 style="font-size:32px;font-weight:900;margin-top:6px;">党建活动管理</h1>
+        </div>
+        <div style="display:flex;gap:10px;">
+          <select class="form-select" id="activityFilter" onchange="filterActivities()" style="width:auto;background:rgba(255,255,255,0.15);color:#fff;border-color:rgba(255,255,255,0.3);">
+            <option>全部活动</option>
+            <option>报名中</option>
+            <option>已结束</option>
+          </select>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="container">
+      <div class="grid-3" id="activitiesList">
+        <!-- 活动卡片由JS动态加载 -->
+        <div style="text-align:center;padding:40px;color:var(--text2);grid-column:1/-1;">加载中...</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <div class="container">
+      <div class="footer-grid">
+        <div>
+          <div class="footer-brand-title">智汇AI党建平台</div>
+          <div class="footer-brand-desc">以党建为引领，以智汇为纽带，以AI为翼。</div>
+        </div>
+        <div>
+          <div class="footer-col-title">快速导航</div>
+          <a href="index.html" class="footer-link">首页</a>
+          <a href="party.html" class="footer-link">党建引领</a>
+          <a href="showcase.html" class="footer-link">社团风采</a>
+        </div>
+        <div>
+          <div class="footer-col-title">功能模块</div>
+          <a href="study.html" class="footer-link">在线答题</a>
+          <a href="chat.html" class="footer-link">AI党建</a>
+          <a href="message.html" class="footer-link">留言建议</a>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <div class="footer-copy">© 2024 智汇AI党建平台</div>
+      </div>
+    </div>
+  </footer>
+
+  <script src="common.js?v=20260427-10"></script>
+  <script>
+    // 活动页动态加载
+    async function loadActivities(status) {
+      const activities = await getActivities(status);
+      renderActivityCards(activities, 'activitiesList');
+    }
+
+    function filterActivities() {
+      const filter = document.getElementById('activityFilter').value;
+      loadActivities(filter === '全部活动' ? null : filter);
+    }
+
+    document.addEventListener('DOMContentLoaded', function() {
+      updateNavigation();
+      loadActivities();
+    });
+  </script>
+</body>
+</html>
+
+
+
+
+
+
+
+
+
+
+

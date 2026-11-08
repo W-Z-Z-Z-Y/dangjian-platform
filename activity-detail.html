@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>活动详情 - 智汇AI党建平台</title>
+  <link rel="stylesheet" href="styles.css?v=20260427-3">
+</head>
+<body>
+  <!-- Toast -->
+  <div id="toast"></div>
+
+  <!-- Top Navigation -->
+  <nav id="topnav">
+    <div class="nav-wrap">
+      <div class="nav-logo" onclick="window.location.href='index.html'">
+        <div class="nav-logo-icon">★</div>
+        <div><div class="nav-logo-text">智汇AI党建平台</div></div>
+      </div>
+      <div class="nav-links">
+        <div class="nav-link" onclick="window.location.href='index.html'">首 页</div>
+        <div class="nav-link" onclick="window.location.href='party.html'">党建引领</div>
+        <div class="nav-link" onclick="window.location.href='showcase.html'">社团风采</div>
+        <div class="nav-link" onclick="window.location.href='activities.html'">党建活动</div>
+        <div class="nav-link" onclick="window.location.href='study.html'">在线答题</div>
+        <div class="nav-link" onclick="window.location.href='chat.html'">AI党建</div>
+        <div class="nav-link" onclick="window.location.href='message.html'">留言建议</div>
+      </div>
+      <div class="nav-right" id="navRight">
+        <button class="nav-btn" onclick="toggleTheme()">🌙 深色</button>
+        <button class="nav-btn nav-btn-login" onclick="window.location.href='login.html'">登 录</button>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Hero -->
+  <div class="detail-hero">
+    <div class="container">
+      <div class="breadcrumb">
+        <span onclick="window.location.href='index.html'" style="cursor:pointer;">首页</span>
+        <span class="breadcrumb-sep">›</span>
+        <span onclick="window.location.href='activities.html'" style="cursor:pointer;">党建活动</span>
+        <span class="breadcrumb-sep">›</span>
+        <span>活动详情</span>
+      </div>
+      <div class="detail-hero-title" id="activityTitle">活动详情加载中...</div>
+      <div class="detail-hero-meta">
+        <span id="activityHeroDate">📅 -</span>
+        <span id="activityHeroLocation">📍 -</span>
+        <span class="badge" id="activityHeroStatus" style="background:rgba(255,255,255,0.15);color:#fff;">待加载</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="detail-body">
+    <div style="display:grid;grid-template-columns:1fr 320px;gap:24px;" class="grid-detail-layout">
+      <div>
+        <div class="card" style="padding:32px;margin-bottom:20px;">
+          <h3 style="font-size:18px;font-weight:700;margin-bottom:16px;">活动详情</h3>
+          <div class="detail-content" id="activityContent">
+            <p>正在加载活动内容...</p>
+          </div>
+        </div>
+        <div class="card" style="padding:32px;">
+          <h3 style="font-size:18px;font-weight:700;margin-bottom:16px;">📸 活动照片/视频回顾</h3>
+          <div id="activityReviewContainer">
+            <div class="alert alert-info" id="activityReviewText">本活动尚未开始，活动结束后将上传照片和视频回顾</div>
+          </div>
+        </div>
+      </div>
+      <div>
+        <div class="card" style="padding:24px;margin-bottom:16px;">
+          <div style="font-weight:700;font-size:15px;margin-bottom:16px;">📋 活动信息</div>
+          <div style="display:flex;flex-direction:column;gap:12px;font-size:14px;color:var(--text2);">
+            <div><span style="color:var(--text3);">活动时间：</span><span id="activityInfoDate">-</span></div>
+            <div><span style="color:var(--text3);">活动地点：</span><span id="activityInfoLocation">-</span></div>
+            <div><span style="color:var(--text3);">活动类型：</span><span class="badge badge-red" id="activityInfoTag">待加载</span></div>
+            <div><span style="color:var(--text3);">活动状态：</span><span id="activityInfoStatus">-</span></div>
+            <div><span style="color:var(--text3);">人数限制：</span><span id="activityInfoCapacity">-</span></div>
+            <div><span style="color:var(--text3);">已报名：</span><span id="activityInfoEnrolled">-</span></div>
+          </div>
+          <button class="btn btn-red" id="activityPrimaryBtn" style="width:100%;justify-content:center;margin-top:20px;" onclick="openSignupModal()">🎉 立即报名</button>
+          <button class="btn btn-outline btn-sm" style="width:100%;justify-content:center;margin-top:10px;">📍 签到入口</button>
+        </div>
+        <div class="card" style="padding:24px;">
+          <div style="font-weight:700;font-size:15px;margin-bottom:12px;">⚠️ 注意事项</div>
+          <ul style="font-size:13px;color:var(--text2);line-height:2;padding-left:16px;">
+            <li>请提前10分钟到场，凭报名记录签到</li>
+            <li>党员同志须佩戴党徽出席</li>
+            <li>活动全程禁止使用手机</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Signup Modal -->
+  <div class="modal-overlay" id="signupModal">
+    <div class="modal">
+      <button class="modal-close" onclick="closeModal('signupModal')">✕</button>
+      <div class="modal-title">🎉 活动报名</div>
+      <div class="alert alert-info">报名活动：<strong id="signupActivityTitle">活动详情加载中...</strong></div>
+      <div class="form-group"><label class="form-label">姓名</label><input class="form-input" placeholder="请输入真实姓名"></div>
+      <div class="form-group"><label class="form-label">学号</label><input class="form-input" placeholder="请输入学号"></div>
+      <div class="form-group"><label class="form-label">院系</label><input class="form-input" placeholder="请输入所在院系"></div>
+      <div class="form-group"><label class="form-label">身份</label>
+        <select class="form-select"><option>党员</option><option>预备党员</option><option>入党积极分子</option><option>普通成员</option></select>
+      </div>
+      <div class="form-group"><label class="form-label">联系方式</label><input class="form-input" placeholder="手机号或微信号"></div>
+      <div class="modal-footer">
+        <button class="btn btn-outline btn-sm" onclick="closeModal('signupModal')">取消</button>
+        <button class="btn btn-red" onclick="doSignup()">✅ 确认报名</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <div class="container">
+      <div class="footer-grid">
+        <div><div class="footer-brand-title">智汇AI党建平台</div><div class="footer-brand-desc">以党建为引领，以智汇为纽带，以AI为翼。</div></div>
+        <div>
+          <div class="footer-col-title">快速导航</div>
+          <a href="index.html" class="footer-link">首页</a>
+          <a href="party.html" class="footer-link">党建引领</a>
+          <a href="activities.html" class="footer-link">党建活动</a>
+        </div>
+        <div>
+          <div class="footer-col-title">功能模块</div>
+          <a href="study.html" class="footer-link">在线答题</a>
+          <a href="chat.html" class="footer-link">AI党建</a>
+        </div>
+      </div>
+      <div class="footer-bottom"><div class="footer-copy">© 2024 智汇AI党建平台</div></div>
+    </div>
+  </footer>
+
+  <script src="common.js?v=20260427-10"></script>
+  <script>
+    function escapeHtml(text) {
+      return String(text || '')
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#39;');
+    }
+
+    function renderActivityContent(content) {
+      const normalized = String(content || '').trim();
+      if (!normalized) {
+        return '<p>暂无活动内容，请在后台活动管理中补充详细介绍。</p>';
+      }
+
+      return normalized
+        .split(/\r?\n\s*\r?\n/)
+        .map(section => `<p>${escapeHtml(section).replace(/\r?\n/g, '<br>')}</p>`)
+        .join('');
+    }
+
+    function isVideoUrl(url) {
+      return /\.(mp4|webm|ogg)(\?|#|$)/i.test(url);
+    }
+
+    function renderActivityReview(activity) {
+      const container = document.getElementById('activityReviewContainer');
+      const text = String(activity.reviewText || '').trim();
+      const media = Array.isArray(activity.reviewMedia) ? activity.reviewMedia.filter(Boolean) : [];
+
+      if (!text && media.length === 0) {
+        container.innerHTML = `<div class="alert alert-info" id="activityReviewText">${activity.status === '已结束'
+          ? '活动已结束，暂无回顾内容，请在后台活动管理中补充。'
+          : '本活动尚未开始，活动结束后将上传照片和视频回顾'}</div>`;
+        return;
+      }
+
+      const textHtml = text
+        ? `<div class="detail-content" style="margin-bottom:16px;">${renderActivityContent(text)}</div>`
+        : '';
+
+      const mediaHtml = media.length > 0
+        ? `<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px;">
+            ${media.map(url => {
+              const safeUrl = escapeHtml(url);
+              if (isVideoUrl(url)) {
+                return `<video controls style="width:100%;border-radius:10px;background:#000;" src="${safeUrl}"></video>`;
+              }
+              return `<img src="${safeUrl}" alt="活动回顾" style="width:100%;border-radius:10px;display:block;" loading="lazy">`;
+            }).join('')}
+          </div>`
+        : '';
+
+      container.innerHTML = textHtml + mediaHtml;
+    }
+
+    async function loadActivityDetail() {
+      const params = new URLSearchParams(window.location.search);
+      const activity = await getActivityDetail(params.get('id'));
+
+      if (!activity) {
+        document.getElementById('activityTitle').textContent = '未找到活动';
+        document.getElementById('activityContent').innerHTML = '<p>活动不存在或已被删除，请返回活动列表重新选择。</p>';
+        document.getElementById('activityReviewContainer').innerHTML = '<div class="alert alert-info">当前活动暂无可展示回顾。</div>';
+        document.getElementById('signupActivityTitle').textContent = '未找到活动';
+        return;
+      }
+
+      const statusClass = activity.status === '报名中' ? 'badge-green' : 'badge-gray';
+      const primaryBtn = document.getElementById('activityPrimaryBtn');
+
+      document.title = `${activity.title || '活动详情'} - 智汇AI党建平台`;
+      document.getElementById('activityTitle').textContent = activity.title || '活动详情';
+      document.getElementById('activityHeroDate').textContent = `📅 ${activity.date || '-'}`;
+      document.getElementById('activityHeroLocation').textContent = `📍 ${activity.location || '待定'}`;
+      document.getElementById('activityHeroStatus').textContent = activity.status || '待定';
+      document.getElementById('activityHeroStatus').className = `badge ${statusClass}`;
+      document.getElementById('activityContent').innerHTML = renderActivityContent(activity.content);
+      renderActivityReview(activity);
+
+      document.getElementById('activityInfoDate').textContent = activity.date || '-';
+      document.getElementById('activityInfoLocation').textContent = activity.location || '待定';
+      document.getElementById('activityInfoTag').textContent = activity.tag || '未分类';
+      document.getElementById('activityInfoTag').className = `badge badge-${activity.tagColor || 'red'}`;
+      document.getElementById('activityInfoStatus').textContent = activity.status || '-';
+      document.getElementById('activityInfoCapacity').textContent = `${activity.capacity || 0}人`;
+      document.getElementById('activityInfoEnrolled').textContent = `${activity.enrolled || 0}人`;
+      document.getElementById('signupActivityTitle').textContent = activity.title || '活动详情';
+
+      primaryBtn.textContent = activity.status === '报名中' ? '🎉 立即报名' : '📘 查看回顾';
+      primaryBtn.className = activity.status === '报名中' ? 'btn btn-red' : 'btn btn-outline';
+      primaryBtn.onclick = activity.status === '报名中'
+        ? openSignupModal
+        : function() { window.scrollTo({ top: 0, behavior: 'smooth' }); };
+    }
+
+    function openSignupModal() {
+      document.getElementById('signupModal').classList.add('open');
+    }
+
+    function doSignup() {
+      showToast('✅ 报名成功！我们会尽快与您联系确认');
+      closeModal('signupModal');
+    }
+
+    document.addEventListener('DOMContentLoaded', loadActivityDetail);
+  </script>
+</body>
+</html>
+
+
+
+
+
+
+
