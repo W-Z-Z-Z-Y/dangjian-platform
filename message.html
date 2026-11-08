@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>留言建议 - 智汇AI党建平台</title>
+  <link rel="stylesheet" href="styles.css?v=20260427-3">
+</head>
+<body>
+  <!-- Page loader -->
+  <div id="pageLoader" class="page-loader">
+    <div class="loader-content">
+      <div class="loader-spinner"></div>
+      <div class="loader-text">智汇AI党建平台</div>
+    </div>
+  </div>
+
+  <!-- Toast -->
+  <div id="toast"></div>
+
+  <!-- Top Navigation -->
+  <nav id="topnav">
+    <div class="nav-wrap">
+      <div class="nav-logo" onclick="window.location.href='index.html'">
+        <div class="nav-logo-icon">★</div>
+        <div><div class="nav-logo-text">智汇AI党建平台</div></div>
+      </div>
+      <div class="nav-links">
+        <div class="nav-link" onclick="window.location.href='index.html'">首 页</div>
+        <div class="nav-link" onclick="window.location.href='party.html'">党建引领</div>
+        <div class="nav-link" onclick="window.location.href='showcase.html'">社团风采</div>
+        <div class="nav-link" onclick="window.location.href='activities.html'">党建活动</div>
+        <div class="nav-link" onclick="window.location.href='study.html'">在线答题</div>
+        <div class="nav-link" onclick="window.location.href='chat.html'">AI党建</div>
+        <div class="nav-link active" onclick="window.location.href='message.html'">留言建议</div>
+      </div>
+      <div class="nav-right" id="navRight">
+        <button class="nav-btn" onclick="toggleTheme()">🌙 深色</button>
+        <button class="nav-btn nav-btn-login" onclick="window.location.href='login.html'">登 录</button>
+        <button class="nav-btn nav-btn-admin" onclick="window.location.href='admin.html'" style="display:none">后台管理</button>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Hero Banner -->
+  <div style="background:linear-gradient(120deg,var(--red-dark),var(--red));padding:40px 0;color:#fff;">
+    <div class="container">
+      <div class="sec-tag" style="color:rgba(255,255,255,0.7);">MESSAGE</div>
+      <h1 style="font-size:32px;font-weight:900;margin-top:6px;">留言建议 · 意见建议</h1>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="container">
+      <div class="grid-2" style="gap:32px;align-items:start;">
+        <!-- Submit -->
+        <div>
+          <div class="sec-hd"><div class="sec-tag">SUBMIT</div><h2 class="sec-title">提交<span>建议</span></h2></div>
+          <div class="card" style="padding:28px;">
+            <div class="form-group" style="margin-bottom:12px;">
+              <label style="display:flex;align-items:center;gap:10px;font-size:14px;color:var(--text2);cursor:pointer;">
+                <input type="checkbox" id="msgAnonymous" onchange="toggleAnonymousMessage()">
+                <span>匿名留言</span>
+              </label>
+            </div>
+            <div class="form-group">
+              <label class="form-label">姓名 / 昵称</label>
+              <input class="form-input" id="msgName" placeholder="请输入您的姓名或昵称">
+            </div>
+            <div class="form-group">
+              <label class="form-label">联系方式（选填）</label>
+              <input class="form-input" id="msgContact" placeholder="邮箱 / 微信 / 手机号">
+            </div>
+            <div class="form-group">
+              <label class="form-label">留言类型</label>
+              <select class="form-select" id="msgType">
+                <option>意见建议</option>
+                <option>活动反馈</option>
+                <option>学习心得</option>
+                <option>其他</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label class="form-label">留言内容</label>
+              <textarea class="form-textarea" id="msgContent" placeholder="请输入您的留言内容，我们将认真阅读每一条留言..." style="min-height:130px;" maxlength="1000"></textarea>
+              <div style="text-align:right;font-size:12px;color:var(--text3);margin-top:6px;"><span id="msgCount">0</span>/1000</div>
+            </div>
+            <button class="btn btn-red" id="submitMsgBtn" style="width:100%;justify-content:center;" onclick="submitMessage()">📨 提交留言</button>
+            <p style="font-size:12px;color:var(--text3);margin-top:10px;text-align:center;">* 所有留言将经管理员审核后展示</p>
+          </div>
+        </div>
+
+        <!-- Messages -->
+        <div>
+          <div class="sec-hd hd-row">
+            <div><div class="sec-tag">MESSAGES</div><h2 class="sec-title">留言<span>展示</span></h2></div>
+          </div>
+          <div style="display:flex;flex-direction:column;gap:16px;" id="messageListWrap">
+            <div class="card" style="padding:24px;text-align:center;color:var(--text3);">正在加载留言...</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <div class="container">
+      <div class="footer-grid">
+        <div>
+          <div class="footer-brand-title">智汇AI党建平台</div>
+          <div class="footer-brand-desc">以党建为引领，以智汇为纽带，以AI为翼。</div>
+        </div>
+        <div>
+          <div class="footer-col-title">快速导航</div>
+          <a href="index.html" class="footer-link">首页</a>
+          <a href="party.html" class="footer-link">党建引领</a>
+          <a href="showcase.html" class="footer-link">社团风采</a>
+        </div>
+        <div>
+          <div class="footer-col-title">功能模块</div>
+          <a href="study.html" class="footer-link">在线答题</a>
+          <a href="chat.html" class="footer-link">AI党建</a>
+          <a href="message.html" class="footer-link">留言建议</a>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <div class="footer-copy">© 2024 智汇AI党建平台</div>
+      </div>
+    </div>
+  </footer>
+
+  <script src="common.js?v=20260427-10"></script>
+  <script>
+    function esc(text) {
+      return String(text || '')
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#39;');
+    }
+
+    function avatarColor(name) {
+      const colors = ['var(--red)', 'var(--blue)', 'var(--gold)', '#00b45a', '#8B00C9'];
+      const code = (String(name || '?').charCodeAt(0) || 0);
+      return colors[code % colors.length];
+    }
+
+    function formatDateTime(val) {
+      if (!val) return '-';
+      return String(val).slice(0, 16).replace('T', ' ');
+    }
+
+    function renderMessages(list) {
+      const wrap = document.getElementById('messageListWrap');
+      if (!Array.isArray(list) || list.length === 0) {
+        wrap.innerHTML = '<div class="card" style="padding:24px;text-align:center;color:var(--text3);">暂无已审核留言，欢迎提交第一条建议！</div>';
+        return;
+      }
+
+      wrap.innerHTML = list.map(item => {
+        const name = esc(item.name || '匿名用户');
+        const content = esc(item.content || '');
+        const type = esc(item.type || '意见建议');
+        const initial = name.charAt(0);
+        const date = formatDateTime(item.createdAt);
+        const bg = avatarColor(name);
+        return `
+          <div class="card" style="padding:20px 24px;">
+            <div style="display:flex;gap:12px;align-items:flex-start;">
+              <div style="width:40px;height:40px;border-radius:50%;background:linear-gradient(135deg,${bg},var(--red-dark));display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700;flex-shrink:0;">${initial}</div>
+              <div style="flex:1;">
+                <div style="display:flex;align-items:center;gap:8px;margin-bottom:5px;flex-wrap:wrap;">
+                  <span style="font-weight:700;font-size:14px;">${name}</span>
+                  <span class="badge badge-blue">${type}</span>
+                  <span style="font-size:12px;color:var(--text3);">${date}</span>
+                </div>
+                <p style="font-size:14px;color:var(--text2);line-height:1.8;white-space:pre-wrap;">${content}</p>
+              </div>
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    async function loadMessages() {
+      try {
+        const res = await apiRequest('/content/messages?limit=20', { noCache: true });
+        if (res.success) {
+          renderMessages(res.data || []);
+        }
+      } catch (error) {
+        document.getElementById('messageListWrap').innerHTML = '<div class="card" style="padding:24px;text-align:center;color:var(--red);">留言加载失败，请稍后重试</div>';
+      }
+    }
+
+    document.addEventListener('DOMContentLoaded', function() {
+      updateNavigation();
+      loadMessages();
+      const msgContent = document.getElementById('msgContent');
+      const msgCount = document.getElementById('msgCount');
+      msgContent.addEventListener('input', function() {
+        msgCount.textContent = String(msgContent.value.length);
+      });
+    });
+
+    function toggleAnonymousMessage() {
+      const anonymous = document.getElementById('msgAnonymous').checked;
+      const nameInput = document.getElementById('msgName');
+      const contactInput = document.getElementById('msgContact');
+
+      nameInput.disabled = anonymous;
+      contactInput.disabled = anonymous;
+      nameInput.placeholder = anonymous ? '已启用匿名留言，将显示为匿名用户' : '请输入您的姓名或昵称';
+      contactInput.placeholder = anonymous ? '匿名留言时不记录联系方式' : '邮箱 / 微信 / 手机号';
+
+      if (anonymous) {
+        nameInput.value = '';
+        contactInput.value = '';
+      }
+    }
+
+    async function submitMessage() {
+      const anonymous = document.getElementById('msgAnonymous').checked;
+      const name = document.getElementById('msgName').value.trim();
+      const contact = document.getElementById('msgContact').value.trim();
+      const type = document.getElementById('msgType').value;
+      const content = document.getElementById('msgContent').value.trim();
+      const submitBtn = document.getElementById('submitMsgBtn');
+      
+      if (!anonymous && !name) {
+        showToast('请输入姓名或昵称');
+        return;
+      }
+      if (!content) {
+        showToast('请输入留言内容');
+        return;
+      }
+
+      if (content.length > 1000) {
+        showToast('留言内容不能超过1000字');
+        return;
+      }
+
+      submitBtn.disabled = true;
+      submitBtn.textContent = '提交中...';
+      try {
+        const res = await apiRequest('/content/messages', {
+          method: 'POST',
+          body: JSON.stringify({ name, contact, type, content, anonymous })
+        });
+        if (res.success) {
+          showToast('✅ 留言提交成功！待管理员审核后展示');
+          document.getElementById('msgName').value = '';
+          document.getElementById('msgContact').value = '';
+          document.getElementById('msgContent').value = '';
+          document.getElementById('msgAnonymous').checked = false;
+          toggleAnonymousMessage();
+          document.getElementById('msgCount').textContent = '0';
+          loadMessages();
+        }
+      } catch (error) {
+        // apiRequest 会统一提示
+      } finally {
+        submitBtn.disabled = false;
+        submitBtn.textContent = '📨 提交留言';
+      }
+    }
+  </script>
+</body>
+</html>
+
+
+
+
+
+
+
