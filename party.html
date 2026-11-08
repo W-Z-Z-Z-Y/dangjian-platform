@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>党建引领 - 智汇AI党建平台</title>
+  <link rel="stylesheet" href="styles.css?v=20260427-3">
+</head>
+<body>
+  <!-- Page loader -->
+  <div id="pageLoader" class="page-loader">
+    <div class="loader-content">
+      <div class="loader-spinner"></div>
+      <div class="loader-text">智汇AI党建平台</div>
+    </div>
+  </div>
+
+  <!-- Toast -->
+  <div id="toast"></div>
+
+  <!-- Top Navigation -->
+  <nav id="topnav">
+    <div class="nav-wrap">
+      <div class="nav-logo" onclick="window.location.href='index.html'">
+        <div class="nav-logo-icon">★</div>
+        <div>
+          <div class="nav-logo-text">智汇AI党建平台</div>
+        </div>
+      </div>
+      <div class="nav-links">
+        <div class="nav-link" onclick="window.location.href='index.html'">首 页</div>
+        <div class="nav-link active" onclick="window.location.href='party.html'">党建引领</div>
+        <div class="nav-link" onclick="window.location.href='showcase.html'">社团风采</div>
+        <div class="nav-link" onclick="window.location.href='activities.html'">党建活动</div>
+        <div class="nav-link" onclick="window.location.href='study.html'">在线答题</div>
+        <div class="nav-link" onclick="window.location.href='chat.html'">AI党建</div>
+        <div class="nav-link" onclick="window.location.href='message.html'">留言建议</div>
+      </div>
+      <div class="nav-right" id="navRight">
+        <button class="nav-btn" onclick="toggleTheme()" id="themeToggle">🌙 深色</button>
+        <button class="nav-btn nav-btn-login" onclick="window.location.href='login.html'">登 录</button>
+        <button class="nav-btn nav-btn-admin" onclick="window.location.href='admin.html'">后台管理</button>
+      </div>
+      <button class="hamburger" onclick="toggleMobileNav()">
+        <span></span><span></span><span></span>
+      </button>
+    </div>
+  </nav>
+
+  <!-- Mobile Nav -->
+  <div class="mobile-nav" id="mobileNav">
+    <div class="mobile-nav-item" onclick="window.location.href='index.html';toggleMobileNav()">🏠 首页</div>
+    <div class="mobile-nav-item" onclick="window.location.href='party.html';toggleMobileNav()">🚩 党建引领</div>
+    <div class="mobile-nav-item" onclick="window.location.href='showcase.html';toggleMobileNav()">🌟 社团风采</div>
+    <div class="mobile-nav-item" onclick="window.location.href='activities.html';toggleMobileNav()">📅 党建活动</div>
+    <div class="mobile-nav-item" onclick="window.location.href='study.html';toggleMobileNav()">📚 在线答题</div>
+    <div class="mobile-nav-item" onclick="window.location.href='chat.html';toggleMobileNav()">🤖 AI党建</div>
+    <div class="mobile-nav-item" onclick="window.location.href='message.html';toggleMobileNav()">💬 留言建议</div>
+  </div>
+
+  <!-- Hero Banner -->
+  <div style="background:linear-gradient(120deg,var(--red-dark),var(--red));padding:40px 0;color:#fff;">
+    <div class="container">
+      <div class="sec-tag" style="color:rgba(255,255,255,0.7);">PARTY CULTURE</div>
+      <h1 style="font-size:32px;font-weight:900;margin-top:6px;">党建引领</h1>
+      <p style="font-size:14px;opacity:0.75;margin-top:8px;">学习贯彻习近平新时代中国特色社会主义思想，坚定理想信念，凝聚奋进力量</p>
+    </div>
+  </div>
+
+  <!-- Party Nav -->
+  <div class="party-nav">
+    <div class="container">
+      <div class="party-nav-inner" id="partyNavInner">
+        <div class="party-nav-item active" onclick="switchPartyTab('news',this)">党建新闻</div>
+        <div class="party-nav-item" onclick="switchPartyTab('charter',this)">党章党规</div>
+        <div class="party-nav-item" onclick="switchPartyTab('culture',this)">红色文化</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="container">
+      <!-- Party News -->
+      <div id="ptab-news">
+        <div style="text-align:center;padding:30px;color:var(--text2);">加载中...</div>
+      </div>
+
+      <!-- Charter -->
+      <div id="ptab-charter" style="display:none;">
+        <div class="card" style="padding:32px;max-width:720px;">
+          <h3 style="font-size:20px;font-weight:700;color:var(--text);margin-bottom:16px;">中国共产党章程（节选）</h3>
+          <p style="font-size:15px;color:var(--text2);line-height:2;margin-bottom:14px;">中国共产党是中国工人阶级的先锋队，同时是中国人民和中华民族的先锋队，是中国特色社会主义事业的领导核心，代表中国先进生产力的发展要求，代表中国先进文化的前进方向，代表中国最广大人民的根本利益。党的最高理想和最终目标是实现共产主义。</p>
+          <p style="font-size:15px;color:var(--text2);line-height:2;margin-bottom:20px;">中国共产党以马克思列宁主义、毛泽东思想、邓小平理论、"三个代表"重要思想、科学发展观、习近平新时代中国特色社会主义思想作为自己的行动指南。</p>
+          <button class="btn btn-red btn-sm" onclick="showToast('开始下载党章全文...')">下载完整党章</button>
+        </div>
+      </div>
+
+      <!-- Red Culture -->
+      <div id="ptab-culture" style="display:none;">
+        <div style="text-align:center;padding:30px;color:var(--text2);">加载中...</div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <div class="container">
+      <div class="footer-grid">
+        <div>
+          <div class="footer-brand-title">智汇AI党建平台</div>
+          <div class="footer-brand-desc">以党建为引领，以智汇为纽带，以AI为翼，致力于打造现代化、智能化的党建文化平台。</div>
+        </div>
+        <div>
+          <div class="footer-col-title">快速导航</div>
+          <a href="index.html" class="footer-link">首页</a>
+          <a href="party.html" class="footer-link">党建引领</a>
+          <a href="showcase.html" class="footer-link">社团风采</a>
+        </div>
+        <div>
+          <div class="footer-col-title">功能模块</div>
+          <a href="study.html" class="footer-link">在线答题</a>
+          <a href="chat.html" class="footer-link">AI党建</a>
+          <a href="message.html" class="footer-link">留言建议</a>
+        </div>
+        <div>
+          <div class="footer-col-title">联系我们</div>
+          <div class="footer-link">📍 武汉市蔡甸区</div>
+          <div class="footer-link">✉️ contact@example.com</div>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <div class="footer-copy">© 2024 智汇AI党建平台</div>
+      </div>
+    </div>
+  </footer>
+
+  <script src="common.js?v=20260427-10"></script>
+  <script>
+    // 党建内容分类与容器映射
+    const partyTabMap = {
+      news: { type: 'cards', containerId: 'ptab-news' },
+      culture: { type: 'cards', containerId: 'ptab-culture' }
+    };
+
+    // 已加载标记，避免重复请求
+    const loadedTabs = {};
+
+    // 加载单个分类数据
+    async function loadPartyTab(category) {
+      if (loadedTabs[category]) return;
+      const config = partyTabMap[category];
+      if (!config) return;
+
+      try {
+        let items = await getPartyContent(category);
+
+        if ((!Array.isArray(items) || items.length === 0) && category === 'news') {
+          const refreshedItems = await getPartyContent(category, { forceRefresh: true });
+          if (Array.isArray(refreshedItems) && refreshedItems.length) {
+            items = refreshedItems;
+          }
+        }
+
+        loadedTabs[category] = true;
+
+        if (config.type === 'table') {
+          renderPolicyTable(items, config.containerId, category);
+        } else {
+          const container = document.getElementById(config.containerId);
+          if (!container) return;
+          const prefixHtml = config.prefix || '';
+          if (!items.length) {
+            container.innerHTML = prefixHtml + '<div class="alert alert-info">暂无内容</div>';
+            return;
+          }
+          container.innerHTML = prefixHtml + '<div class="grid-3">' + items.map(n => `
+            <a href="party-detail.html?category=${encodeURIComponent(category)}&id=${encodeURIComponent(n.id)}" class="card act-card">
+              <div class="act-card-img" style="${n.image ? `background-image:url('${n.image}');background-size:cover;background-position:center;` : `background:${n.bg || 'linear-gradient(135deg,#4a0000,#c90000)'};`}">${n.image ? '' : (n.icon || '🚩')}</div>
+              <div class="act-card-body">
+                <div class="act-card-title">${n.title}</div>
+                <div class="act-card-meta"><span class="badge badge-${n.tagColor}">${n.tag}</span><span>${n.date || n.sub || ''}</span></div>
+              </div>
+            </a>
+          `).join('') + '</div>';
+        }
+      } catch (error) {
+        loadedTabs[category] = false;
+        const container = document.getElementById(config.containerId);
+        if (!container) return;
+        const prefixHtml = config.prefix || '';
+        container.innerHTML = prefixHtml + `<div class="alert alert-info">内容加载失败，请稍后重试 <button class="btn btn-outline btn-sm" style="margin-left:12px;" onclick="retryPartyTab('${category}')">重新加载</button></div>`;
+      }
+    }
+
+    function retryPartyTab(category) {
+      loadedTabs[category] = false;
+      const config = partyTabMap[category];
+      const container = config ? document.getElementById(config.containerId) : null;
+      if (container) {
+        container.innerHTML = '<div style="text-align:center;padding:30px;color:var(--text2);">加载中...</div>';
+      }
+      loadPartyTab(category);
+    }
+
+    // 重写 tab 切换，加载对应数据
+    const _origSwitchPartyTab = switchPartyTab;
+    switchPartyTab = function(tab, el) {
+      _origSwitchPartyTab(tab, el);
+      loadPartyTab(tab);
+    };
+
+    // 页面初始化：加载默认的 news tab
+    document.addEventListener('DOMContentLoaded', function() {
+      updateNavigation();
+      loadPartyTab('news');
+    });
+  </script>
+</body>
+</html>
+
+
+
+
+
+
+

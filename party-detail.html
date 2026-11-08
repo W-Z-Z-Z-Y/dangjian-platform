@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>文章详情 - 智汇AI党建平台</title>
+  <link rel="stylesheet" href="styles.css?v=20260427-3">
+</head>
+<body>
+  <!-- Toast -->
+  <div id="toast"></div>
+
+  <!-- Top Navigation -->
+  <nav id="topnav">
+    <div class="nav-wrap">
+      <div class="nav-logo" onclick="window.location.href='index.html'">
+        <div class="nav-logo-icon">★</div>
+        <div><div class="nav-logo-text">智汇AI党建平台</div></div>
+      </div>
+      <div class="nav-links">
+        <div class="nav-link" onclick="window.location.href='index.html'">首 页</div>
+        <div class="nav-link" onclick="window.location.href='party.html'">党建引领</div>
+        <div class="nav-link" onclick="window.location.href='showcase.html'">社团风采</div>
+        <div class="nav-link" onclick="window.location.href='activities.html'">党建活动</div>
+        <div class="nav-link" onclick="window.location.href='study.html'">在线答题</div>
+        <div class="nav-link" onclick="window.location.href='chat.html'">AI党建</div>
+        <div class="nav-link" onclick="window.location.href='message.html'">留言建议</div>
+      </div>
+      <div class="nav-right" id="navRight">
+        <button class="nav-btn" onclick="toggleTheme()">🌙 深色</button>
+        <button class="nav-btn nav-btn-login" onclick="window.location.href='login.html'">登 录</button>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Hero -->
+  <div class="detail-hero">
+    <div class="container">
+      <div class="breadcrumb">
+        <span onclick="window.location.href='index.html'" style="cursor:pointer;">首页</span>
+        <span class="breadcrumb-sep">›</span>
+        <span onclick="window.location.href='party.html'" style="cursor:pointer;">党建引领</span>
+        <span class="breadcrumb-sep">›</span>
+        <span>文章详情</span>
+      </div>
+      <div class="detail-hero-title" id="detailTitle">人工智能协会2024年度党员发展大会圆满召开</div>
+      <div class="detail-hero-meta">
+        <span id="detailDate">📅 2024-12-15</span>
+        <span>👁️ 阅读 1,234</span>
+        <span class="badge badge-red" id="detailTag" style="background:rgba(255,255,255,0.15);color:#fff;">要闻</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="detail-body">
+    <div class="card" style="padding:36px;">
+      <div class="detail-content" id="detailContent">
+        <p>12月15日，人工智能协会2024年度党员发展大会在行政楼多功能厅隆重举行。社团全体党员、入党积极分子、发展对象参加了本次大会，校党委组织部老师出席指导。</p>
+        
+        <h3>大会主要议程</h3>
+        <p>大会由支部书记主持。首先，支部书记对2024年党支部整体工作进行了全面总结，重点介绍了党员发展、组织生活、主题教育等方面取得的重要成果。</p>
+        <p>随后，大会审议通过了2位新党员的入党申请，并举行了庄严的入党宣誓仪式。全体新党员面对党旗，振臂宣誓，郑重承诺将用实际行动践行入党誓词。</p>
+        
+        <h3>AI+党建工作亮点</h3>
+        <p>本次大会特别展示了社团自主研发的"智慧党建平台"成果，该平台融合AI技术，实现了党员学习管理、活动签到、积分激励等功能的智能化，获得与会领导的高度肯定。</p>
+        <p>党委组织部老师在讲话中指出，人工智能协会将先进科技与党建工作深度融合的探索，是新时代党建工作创新发展的有益实践，值得推广。</p>
+        
+        <h3>未来工作展望</h3>
+        <p>展望2025年，党支部将继续坚持以习近平新时代中国特色社会主义思想为指导，深入推进党建工作与AI技术的深度融合，不断探索智慧党建新模式，为新时代高校党建工作贡献更多力量。</p>
+      </div>
+      
+      <div style="margin-top:28px;padding-top:20px;border-top:1px solid var(--border);display:flex;gap:12px;flex-wrap:wrap;">
+        <button class="btn btn-red btn-sm" onclick="showToast('已收藏！')">⭐ 收藏</button>
+        <button class="btn btn-outline btn-sm" onclick="showToast('链接已复制！')">🔗 分享</button>
+        <button class="btn btn-outline-blue btn-sm" onclick="showToast('开始下载...')">📥 下载原文</button>
+      </div>
+    </div>
+
+    <!-- Related -->
+    <div style="margin-top:48px;padding-top:24px;">
+      <h4 style="font-size:16px;font-weight:600;margin-bottom:16px;">相关推荐</h4>
+      <div class="related-content">
+        <a href="party-detail.html" class="related-item">
+          <div class="related-item-title">关于深入开展主题教育学习活动的通知</div>
+          <div class="related-item-meta"><span class="tag tag-blue">通知</span><span>2024-12-10</span></div>
+        </a>
+        <a href="party-detail.html" class="related-item">
+          <div class="related-item-title">社团党支部荣获"优秀党支部"称号</div>
+          <div class="related-item-meta"><span class="tag tag-gold">荣誉</span><span>2024-12-05</span></div>
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <div class="container">
+      <div class="footer-grid">
+        <div><div class="footer-brand-title">智汇AI党建平台</div><div class="footer-brand-desc">以党建为引领，以智汇为纽带，以AI为翼。</div></div>
+        <div><div class="footer-col-title">快速导航</div><a href="index.html" class="footer-link">首页</a><a href="party.html" class="footer-link">党建引领</a><a href="activities.html" class="footer-link">党建活动</a></div>
+        <div><div class="footer-col-title">功能模块</div><a href="study.html" class="footer-link">在线答题</a><a href="chat.html" class="footer-link">AI党建</a><a href="message.html" class="footer-link">留言建议</a></div>
+      </div>
+      <div class="footer-bottom"><div class="footer-copy">© 2024 智汇AI党建平台</div></div>
+    </div>
+  </footer>
+
+  <script src="common.js?v=20260427-10"></script>
+  <script>
+    const DETAIL_CATEGORY_LABELS = {
+      news: '党建新闻',
+      policy: '政策文件',
+      history: '党史学习',
+      culture: '红色文化',
+      tech: '科技强国专栏'
+    };
+
+    function escHtml(text) {
+      return String(text || '')
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#39;');
+    }
+
+    function renderDetailContent(content) {
+      const normalized = String(content || '').trim();
+      if (!normalized) return '';
+      return normalized
+        .split(/\r?\n+/)
+        .map(line => line.trim())
+        .filter(Boolean)
+        .map(line => `<p>${escHtml(line)}</p>`)
+        .join('');
+    }
+
+    function buildFallbackContent(item, category) {
+      const lines = [];
+      if (item.content) {
+        return renderDetailContent(item.content);
+      }
+
+      lines.push(`【分类】${DETAIL_CATEGORY_LABELS[category] || '党建内容'}`);
+      if (item.tag) lines.push(`【标签】${item.tag}`);
+      if (item.date) lines.push(`【发布日期】${item.date}`);
+      if (item.sub) lines.push(`【副标题】${item.sub}`);
+      if (item.desc) lines.push(`【简介】${item.desc}`);
+
+      lines.push('该条目暂未补充正文内容，请前往后台管理完善“正文/内容”字段。');
+      return lines.map(line => `<p>${escHtml(line)}</p>`).join('');
+    }
+
+    async function loadDetailByCategoryAndId() {
+      const params = new URLSearchParams(window.location.search);
+      const category = String(params.get('category') || 'news').trim();
+      const id = Number(params.get('id'));
+      if (!id) return;
+
+      try {
+        const list = await getPartyContent(category);
+        const item = Array.isArray(list) ? list.find(n => Number(n.id) === id) : null;
+        if (!item) return;
+
+        const pageTitle = item.title || '文章详情';
+        document.title = `${pageTitle} - 智汇ai党建平台`;
+        document.getElementById('detailTitle').textContent = item.title || '文章详情';
+        document.getElementById('detailDate').textContent = `📅 ${item.date || item.sub || '-'}`;
+
+        const tagEl = document.getElementById('detailTag');
+        tagEl.textContent = item.tag || DETAIL_CATEGORY_LABELS[category] || '党建内容';
+
+        const tagColor = item.tagColor || 'red';
+        tagEl.className = `badge badge-${tagColor}`;
+        tagEl.style.background = 'rgba(255,255,255,0.15)';
+        tagEl.style.color = '#fff';
+
+        const bodyHtml = buildFallbackContent(item, category);
+        document.getElementById('detailContent').innerHTML = bodyHtml;
+      } catch (error) {
+        // 保留静态兜底内容
+      }
+    }
+
+    document.addEventListener('DOMContentLoaded', function() {
+      updateNavigation();
+      loadDetailByCategoryAndId();
+    });
+  </script>
+</body>
+</html>
+
+
+
+
+
+
+
