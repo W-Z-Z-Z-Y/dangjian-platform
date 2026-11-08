@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>风采详情 - 智汇AI党建平台</title>
+  <link rel="stylesheet" href="styles.css?v=20260427-3">
+</head>
+<body>
+  <div id="toast"></div>
+
+  <nav id="topnav">
+    <div class="nav-wrap">
+      <div class="nav-logo" onclick="window.location.href='index.html'">
+        <div class="nav-logo-icon">★</div>
+        <div><div class="nav-logo-text">智汇AI党建平台</div></div>
+      </div>
+      <div class="nav-links">
+        <div class="nav-link" onclick="window.location.href='index.html'">首 页</div>
+        <div class="nav-link" onclick="window.location.href='party.html'">党建引领</div>
+        <div class="nav-link active" onclick="window.location.href='showcase.html'">社团风采</div>
+        <div class="nav-link" onclick="window.location.href='activities.html'">党建活动</div>
+        <div class="nav-link" onclick="window.location.href='study.html'">在线答题</div>
+        <div class="nav-link" onclick="window.location.href='chat.html'">AI党建</div>
+        <div class="nav-link" onclick="window.location.href='message.html'">留言建议</div>
+      </div>
+      <div class="nav-right" id="navRight">
+        <button class="nav-btn" onclick="toggleTheme()">🌙 深色</button>
+        <button class="nav-btn nav-btn-login" onclick="window.location.href='login.html'">登 录</button>
+      </div>
+    </div>
+  </nav>
+
+  <div class="detail-hero" style="background:linear-gradient(120deg,var(--blue-dark),var(--blue),var(--red));">
+    <div class="container">
+      <div class="breadcrumb">
+        <span onclick="window.location.href='index.html'" style="cursor:pointer;">首页</span>
+        <span class="breadcrumb-sep">›</span>
+        <span onclick="window.location.href='showcase.html'" style="cursor:pointer;">社团风采</span>
+        <span class="breadcrumb-sep">›</span>
+        <span id="detailCategoryLabel">风采详情</span>
+      </div>
+      <div class="detail-hero-title" id="detailTitle">社团风采详情</div>
+      <div class="detail-hero-meta">
+        <span id="detailDate">📅 -</span>
+        <span class="badge badge-blue" id="detailTag" style="background:rgba(255,255,255,0.15);color:#fff;">风采</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="detail-body">
+    <div class="card" style="padding:36px;">
+      <div class="detail-content" id="detailContent">
+        <p>正在加载内容...</p>
+      </div>
+      <div style="margin-top:28px;padding-top:20px;border-top:1px solid var(--border);display:flex;gap:12px;flex-wrap:wrap;">
+        <a class="btn btn-outline" href="showcase.html">← 返回社团风采</a>
+      </div>
+    </div>
+  </div>
+
+  <footer class="footer">
+    <div class="container">
+      <div class="footer-grid">
+        <div><div class="footer-brand-title">智汇AI党建平台</div><div class="footer-brand-desc">以党建为引领，以智汇为纽带，以AI为翼。</div></div>
+        <div><div class="footer-col-title">快速导航</div><a href="index.html" class="footer-link">首页</a><a href="party.html" class="footer-link">党建引领</a><a href="showcase.html" class="footer-link">社团风采</a></div>
+        <div><div class="footer-col-title">功能模块</div><a href="study.html" class="footer-link">在线答题</a><a href="chat.html" class="footer-link">AI党建</a><a href="message.html" class="footer-link">留言建议</a></div>
+      </div>
+      <div class="footer-bottom"><div class="footer-copy">© 2024 智汇AI党建平台</div></div>
+    </div>
+  </footer>
+
+  <script src="common.js?v=20260427-10"></script>
+  <script>
+    const SHOWCASE_CATEGORY_LABELS = {
+      activities: '党建+AI活动',
+      members: '成员风采',
+      honors: '荣誉成果',
+      intro: '社团简介'
+    };
+
+    function escHtml(text) {
+      return String(text || '')
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#39;');
+    }
+
+    function toParagraphs(text) {
+      const lines = String(text || '').trim().split(/\r?\n+/).map(line => line.trim()).filter(Boolean);
+      if (!lines.length) return '<p>暂无详细内容。</p>';
+      return lines.map(line => `<p>${escHtml(line)}</p>`).join('');
+    }
+
+    function renderItemContent(category, item) {
+      const parts = [];
+      if (item.content) parts.push(...String(item.content).split(/\r?\n+/).filter(Boolean));
+      if (category === 'members') {
+        parts.unshift(`成员：${item.name || '-'}`);
+        parts.push(`岗位：${item.role || '-'}`);
+        if (item.major) parts.push(`专业：${item.major}`);
+      }
+      if (category === 'honors') {
+        if (item.level) parts.push(`荣誉级别：${item.level}`);
+      }
+      if (category === 'activities') {
+        if (item.date) parts.push(`活动时间：${item.date}`);
+      }
+      const imageHtml = item.image
+        ? `<div style="margin-bottom:24px;"><img src="${escHtml(item.image)}" alt="${escHtml(item.title || item.name || '社团风采图片')}" style="width:100%;max-height:420px;object-fit:cover;border-radius:18px;border:1px solid var(--border);"></div>`
+        : '';
+      return imageHtml + toParagraphs(parts.join('\n'));
+    }
+
+    async function loadShowcaseDetail() {
+      const params = new URLSearchParams(window.location.search);
+      const category = String(params.get('category') || 'activities').trim();
+      const id = Number(params.get('id'));
+      if (!id) return;
+
+      document.getElementById('detailCategoryLabel').textContent = SHOWCASE_CATEGORY_LABELS[category] || '风采详情';
+
+      try {
+        const list = await getShowcaseContent(category);
+        const item = Array.isArray(list) ? list.find(n => Number(n.id) === id) : null;
+        if (!item) {
+          document.getElementById('detailContent').innerHTML = '<p>未找到对应内容，请返回列表重试。</p>';
+          return;
+        }
+
+        const title = item.title || item.name || '风采详情';
+        document.title = `${title} - 智汇AI党建平台`;
+        document.getElementById('detailTitle').textContent = title;
+        document.getElementById('detailDate').textContent = `📅 ${item.date || '-'}`;
+        document.getElementById('detailTag').textContent = item.tag || SHOWCASE_CATEGORY_LABELS[category] || '风采';
+        document.getElementById('detailTag').className = `badge badge-${item.tagColor || 'blue'}`;
+        document.getElementById('detailTag').style.background = 'rgba(255,255,255,0.15)';
+        document.getElementById('detailTag').style.color = '#fff';
+
+        document.getElementById('detailContent').innerHTML = renderItemContent(category, item);
+      } catch (error) {
+        document.getElementById('detailContent').innerHTML = '<p>内容加载失败，请稍后重试。</p>';
+      }
+    }
+
+    document.addEventListener('DOMContentLoaded', function() {
+      updateNavigation();
+      loadShowcaseDetail();
+    });
+  </script>
+</body>
+</html>

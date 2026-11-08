@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>社团风采 - 智汇AI党建平台</title>
+  <link rel="stylesheet" href="styles.css?v=20260427-3">
+</head>
+<body>
+  <!-- Page loader -->
+  <div id="pageLoader" class="page-loader">
+    <div class="loader-content">
+      <div class="loader-spinner"></div>
+      <div class="loader-text">智汇AI党建平台</div>
+    </div>
+  </div>
+
+  <!-- Toast -->
+  <div id="toast"></div>
+
+  <!-- Top Navigation -->
+  <nav id="topnav">
+    <div class="nav-wrap">
+      <div class="nav-logo" onclick="window.location.href='index.html'">
+        <div class="nav-logo-icon">★</div>
+        <div><div class="nav-logo-text">智汇AI党建平台</div></div>
+      </div>
+      <div class="nav-links">
+        <div class="nav-link" onclick="window.location.href='index.html'">首 页</div>
+        <div class="nav-link" onclick="window.location.href='party.html'">党建引领</div>
+        <div class="nav-link active" onclick="window.location.href='showcase.html'">社团风采</div>
+        <div class="nav-link" onclick="window.location.href='activities.html'">党建活动</div>
+        <div class="nav-link" onclick="window.location.href='study.html'">在线答题</div>
+        <div class="nav-link" onclick="window.location.href='chat.html'">AI党建</div>
+        <div class="nav-link" onclick="window.location.href='message.html'">留言建议</div>
+      </div>
+      <div class="nav-right" id="navRight">
+        <button class="nav-btn" onclick="toggleTheme()">🌙 深色</button>
+        <button class="nav-btn nav-btn-login" onclick="window.location.href='login.html'">登 录</button>
+        <button class="nav-btn nav-btn-admin" onclick="window.location.href='admin.html'" style="display:none">后台管理</button>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Hero Banner -->
+  <div style="background:linear-gradient(120deg,var(--blue-dark),var(--blue),var(--red));padding:40px 0;color:#fff;">
+    <div class="container">
+      <div class="sec-tag" style="color:rgba(255,255,255,0.7);">SHOWCASE</div>
+      <h1 style="font-size:32px;font-weight:900;margin-top:6px;">智汇AI党建平台 · 党建风采</h1>
+      <p style="font-size:14px;opacity:0.75;margin-top:8px;">展示社团党建工作成果，记录成员成长足迹</p>
+    </div>
+  </div>
+
+  <!-- Showcase Nav -->
+  <div class="party-nav">
+    <div class="container">
+      <div class="party-nav-inner" id="showcaseNavInner">
+        <div class="party-nav-item active" onclick="switchShowcaseTab('intro',this)">社团简介</div>
+        <div class="party-nav-item" onclick="switchShowcaseTab('activities',this)">党建+AI活动</div>
+        <div class="party-nav-item" onclick="switchShowcaseTab('members',this)">成员风采</div>
+        <div class="party-nav-item" onclick="switchShowcaseTab('honors',this)">荣誉成果</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="container">
+      <!-- Intro -->
+      <div id="stab-intro">
+        <div style="text-align:center;padding:30px;color:var(--text2);">加载中...</div>
+      </div>
+
+      <!-- Activities -->
+      <div id="stab-activities" style="display:none;">
+        <div style="text-align:center;padding:30px;color:var(--text2);">加载中...</div>
+      </div>
+
+      <!-- Members -->
+      <div id="stab-members" style="display:none;">
+        <div style="text-align:center;padding:30px;color:var(--text2);">加载中...</div>
+      </div>
+
+      <!-- Honors -->
+      <div id="stab-honors" style="display:none;">
+        <div style="text-align:center;padding:30px;color:var(--text2);">加载中...</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <div class="container">
+      <div class="footer-grid">
+        <div>
+          <div class="footer-brand-title">智汇AI党建平台</div>
+          <div class="footer-brand-desc">以党建为引领，以智汇为纽带，以AI为翼。</div>
+        </div>
+        <div>
+          <div class="footer-col-title">快速导航</div>
+          <a href="index.html" class="footer-link">首页</a>
+          <a href="party.html" class="footer-link">党建引领</a>
+          <a href="showcase.html" class="footer-link">社团风采</a>
+        </div>
+        <div>
+          <div class="footer-col-title">功能模块</div>
+          <a href="study.html" class="footer-link">在线答题</a>
+          <a href="chat.html" class="footer-link">AI党建</a>
+          <a href="message.html" class="footer-link">留言建议</a>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <div class="footer-copy">© 2024 智汇AI党建平台</div>
+      </div>
+    </div>
+  </footer>
+
+  <script src="common.js?v=20260427-10"></script>
+  <script>
+    const showcaseTabMap = {
+      intro: { containerId: 'stab-intro' },
+      activities: { containerId: 'stab-activities' },
+      members: { containerId: 'stab-members' },
+      honors: { containerId: 'stab-honors' }
+    };
+
+    const loadedShowcaseTabs = {};
+
+    function esc(text) {
+      return String(text || '')
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#39;');
+    }
+
+    function renderShowcaseIntro(data) {
+      const container = document.getElementById('stab-intro');
+      if (!container) return;
+      const about = Array.isArray(data.about) ? data.about : [];
+      const stats = data.stats || {};
+
+      const aboutHtml = about.length
+        ? about.map((line, idx) => `<p style="font-size:15px;color:var(--text2);line-height:2;margin-top:${idx === 0 ? '16px' : '12px'};">${esc(line)}</p>`).join('')
+        : '<p style="font-size:15px;color:var(--text2);line-height:2;margin-top:16px;">暂无社团简介内容</p>';
+
+      container.innerHTML = `
+        <div class="grid-2" style="align-items:center;gap:60px;">
+          <div>
+            <div class="sec-tag">ABOUT US</div>
+            <h2 class="sec-title" style="margin-top:8px;">关于<span>智汇AI党建平台</span></h2>
+            ${aboutHtml}
+            <div style="margin-top:24px;display:flex;gap:12px;flex-wrap:wrap;">
+              <a href="activities.html" class="btn btn-red">参与活动</a>
+              <a href="login.html" class="btn btn-outline-blue">加入我们</a>
+            </div>
+          </div>
+          <div>
+            <div class="card" style="padding:32px;background:linear-gradient(145deg,#1a0000,var(--red-dark));color:#fff;text-align:center;">
+              <div style="font-size:60px;margin-bottom:16px;">🏫</div>
+              <div style="font-size:18px;font-weight:700;">智汇AI党建平台</div>
+              <div style="font-size:13px;opacity:0.7;margin-top:8px;letter-spacing:2px;">党建文化引领 · AI技术赋能</div>
+              <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:24px;">
+                <div style="background:rgba(255,255,255,0.08);border-radius:8px;padding:16px;"><div style="font-size:28px;font-weight:900;">${Number(stats.members || 0)}+</div><div style="font-size:12px;opacity:0.7;">社团成员</div></div>
+                <div style="background:rgba(255,255,255,0.08);border-radius:8px;padding:16px;"><div style="font-size:28px;font-weight:900;">${Number(stats.excellentYears || 0)}年</div><div style="font-size:12px;opacity:0.7;">优秀支部</div></div>
+                <div style="background:rgba(255,255,255,0.08);border-radius:8px;padding:16px;"><div style="font-size:28px;font-weight:900;">${Number(stats.activities || 0)}+</div><div style="font-size:12px;opacity:0.7;">党建活动</div></div>
+                <div style="background:rgba(255,255,255,0.08);border-radius:8px;padding:16px;"><div style="font-size:28px;font-weight:900;">${Number(stats.honors || 0)}+</div><div style="font-size:12px;opacity:0.7;">荣誉奖项</div></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      `;
+    }
+
+    function renderShowcaseActivities(items) {
+      const container = document.getElementById('stab-activities');
+      if (!container) return;
+      if (!Array.isArray(items) || !items.length) {
+        container.innerHTML = '<div class="alert alert-info">暂无活动内容</div>';
+        return;
+      }
+      container.innerHTML = `<div class="grid-3">${items.map(item => `
+        <a href="showcase-detail.html?category=activities&id=${encodeURIComponent(item.id)}" class="card act-card">
+          <div class="act-card-img" style="${item.image ? `background-image:url('${item.image}');background-size:cover;background-position:center;` : (item.bg ? `background:${item.bg};` : '')}">${item.image ? '' : esc(item.icon || '🌟')}</div>
+          <div class="act-card-body">
+            <div class="act-card-title">${esc(item.title)}</div>
+            <div class="act-card-meta"><span class="badge badge-${esc(item.tagColor || 'blue')}">${esc(item.tag || '活动')}</span><span>${esc(item.date || '')}</span></div>
+          </div>
+        </a>
+      `).join('')}</div>`;
+    }
+
+    function renderShowcaseMembers(items) {
+      const container = document.getElementById('stab-members');
+      if (!container) return;
+      if (!Array.isArray(items) || !items.length) {
+        container.innerHTML = '<div class="alert alert-info">暂无成员风采</div>';
+        return;
+      }
+      container.innerHTML = `<div class="grid-4">${items.map(item => `
+        <a href="showcase-detail.html?category=members&id=${encodeURIComponent(item.id)}" class="card" style="padding:24px;text-align:center;display:block;">
+          ${item.image
+            ? `<div style="width:88px;height:88px;margin:0 auto 12px;border-radius:50%;background-image:url('${item.image}');background-size:cover;background-position:center;border:3px solid rgba(22,93,255,0.12);"></div>`
+            : `<div style="font-size:48px;margin-bottom:12px;">${esc(item.avatar || '👤')}</div>`}
+          <div style="font-weight:700;color:var(--text);">${esc(item.name || '成员')}</div>
+          <div style="font-size:13px;color:var(--text3);margin-top:4px;">${esc(item.role || '-')}${item.major ? ` · ${esc(item.major)}` : ''}</div>
+          <div style="margin-top:8px;"><span class="badge badge-${esc(item.badgeColor || 'blue')}">${esc(item.badgeText || '成员')}</span></div>
+        </a>
+      `).join('')}</div>`;
+    }
+
+    function renderShowcaseHonors(items) {
+      const container = document.getElementById('stab-honors');
+      if (!container) return;
+      if (!Array.isArray(items) || !items.length) {
+        container.innerHTML = '<div class="alert alert-info">暂无荣誉成果</div>';
+        return;
+      }
+      container.innerHTML = `<div class="grid-3">${items.map(item => `
+        <a href="showcase-detail.html?category=honors&id=${encodeURIComponent(item.id)}" class="card" style="padding:28px;cursor:pointer;display:block;">
+          ${item.image
+            ? `<div style="height:148px;border-radius:16px;background-image:url('${item.image}');background-size:cover;background-position:center;margin-bottom:16px;"></div>`
+            : `<div style="font-size:48px;margin-bottom:12px;text-align:center;">${esc(item.icon || '🏅')}</div>`}
+          <div style="font-weight:700;font-size:16px;color:var(--text);text-align:center;margin-bottom:8px;">${esc(item.title || '荣誉成果')}</div>
+          <div style="font-size:13px;color:var(--text3);text-align:center;">${esc(item.date || '')}${item.level ? ` · ${esc(item.level)}` : ''}</div>
+        </a>
+      `).join('')}</div>`;
+    }
+
+    async function loadShowcaseTab(tab) {
+      if (loadedShowcaseTabs[tab]) return;
+      const config = showcaseTabMap[tab];
+      if (!config) return;
+
+      try {
+        const data = await getShowcaseContent(tab);
+        if (tab === 'intro') renderShowcaseIntro(data || {});
+        if (tab === 'activities') renderShowcaseActivities(Array.isArray(data) ? data : []);
+        if (tab === 'members') renderShowcaseMembers(Array.isArray(data) ? data : []);
+        if (tab === 'honors') renderShowcaseHonors(Array.isArray(data) ? data : []);
+        loadedShowcaseTabs[tab] = true;
+      } catch (e) {
+        const container = document.getElementById(config.containerId);
+        if (container) container.innerHTML = '<div class="alert alert-info">加载失败，请稍后重试</div>';
+      }
+    }
+
+    document.addEventListener('DOMContentLoaded', function() {
+      updateNavigation();
+      loadShowcaseTab('intro');
+
+      const originalSwitchShowcaseTab = window.switchShowcaseTab;
+      window.switchShowcaseTab = function(tab, el) {
+        originalSwitchShowcaseTab(tab, el);
+        loadShowcaseTab(tab);
+      };
+    });
+  </script>
+</body>
+</html>
+
+
+
+
+
+
+
